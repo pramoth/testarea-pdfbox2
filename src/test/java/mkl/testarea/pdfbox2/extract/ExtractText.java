@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
@@ -786,5 +787,66 @@ public class ExtractText
         }
         // Return the extracted text and this can be used for assertion
         return extractedText;
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/a/56580253/1729265">
+     * wen li's answer to "PDFBox extracting paragraphs"
+     * </a>
+     * <br/>
+     * <a href="https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf">
+     * PDF32000_2008.pdf
+     * </a>
+     * <p>
+     * Here it looks the other way around compared to what the OP claims:
+     * there is a space at the end of all but the last paragraph line.
+     * </p>
+     */
+    @Test
+    public void testPDF32000pageii() throws IOException
+    {
+        try (   InputStream resource = new URL("https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf").openStream()    )
+        {
+            PDDocument document = PDDocument.load(resource);
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setStartPage(2);
+            stripper.setEndPage(2);
+            //stripper.setSortByPosition(true);
+            String text = stripper.getText(document);
+
+            System.out.printf("\n*\n* PDF32000_2008.pdf Page ii\n*\n%s\n", text);
+            Files.write(new File(RESULT_FOLDER, "PDF32000_2008-page-ii.txt").toPath(), Collections.singleton(text));
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/a/56580253/1729265">
+     * wen li's answer to "PDFBox extracting paragraphs"
+     * </a>
+     * <br/>
+     * <a href="https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf">
+     * PDF32000_2008.pdf
+     * </a>
+     * <p>
+     * Here one sees that there is not always a space at the end of all
+     * the non-last paragraph lines, "PDF/X" is split as "PDF/" and "X"
+     * between lines, and there is no space in-between.
+     * </p>
+     */
+    @Test
+    public void testPDF32000pagevii() throws IOException
+    {
+        try (   InputStream resource = new URL("https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf").openStream()    )
+        {
+            PDDocument document = PDDocument.load(resource);
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setStartPage(7);
+            stripper.setEndPage(7);
+            //stripper.setSortByPosition(true);
+            String text = stripper.getText(document);
+
+            System.out.printf("\n*\n* PDF32000_2008.pdf Page ii\n*\n%s\n", text);
+            Files.write(new File(RESULT_FOLDER, "PDF32000_2008-page-vii.txt").toPath(), Collections.singleton(text));
+        }
     }
 }
