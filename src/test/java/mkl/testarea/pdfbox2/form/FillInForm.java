@@ -10,6 +10,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
@@ -226,5 +228,200 @@ public class FillInForm
             doc.save(new File(RESULT_FOLDER, "csOnePage-filled.pdf"));
             doc.close();
         }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/56938135/pdfbox-inconsistent-pdtextfield-autosize-behavior-after-setvalue">
+     * PDFBox Inconsistent PDTextField Autosize Behavior after setValue
+     * </a>
+     * <br/>
+     * <a href="http://www.filedropper.com/0postfontload">
+     * 0.pdf
+     * </a>
+     * <p>
+     * Indeed, some fields look weird after fill-in; for some fields
+     * this is due to weird pre-existing appearance streams. These can
+     * be fixed as in {@link #testFill0DropOldAppearance()}.
+     * </p>
+     * @see #testFill0DropOldAppearance()
+     * @see #testFill0DropOldAppearanceNoCombNoMax()
+     * @see #testFill0DropOldAppearanceNoCombNoMaxNoMultiLine()
+     */
+    @Test
+    public void testFill0LikeXenyal() throws IOException {
+        try (   InputStream originalStream = getClass().getResourceAsStream("0.pdf");
+                InputStream fontStream = getClass().getResourceAsStream("Lato-Regular.ttf"))
+        {
+            PDDocument doc = PDDocument.load(originalStream);
+            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+
+            PDType0Font font = PDType0Font.load(doc, fontStream, false);
+            String font_name = acroForm.getDefaultResources().add(font).getName();
+
+            for (PDField field : acroForm.getFieldTree()) {
+                if (field instanceof PDTextField) {
+                    PDTextField textField = (PDTextField) field;
+                    textField.setDefaultAppearance(String.format("/%s 0 Tf 0 g", font_name));
+                    textField.setValue("Test");
+                }
+            }
+            
+
+            doc.save(new File(RESULT_FOLDER, "0-filledLikeXenyal.pdf"));
+            doc.close();
+        }        
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/56938135/pdfbox-inconsistent-pdtextfield-autosize-behavior-after-setvalue">
+     * PDFBox Inconsistent PDTextField Autosize Behavior after setValue
+     * </a>
+     * <br/>
+     * <a href="http://www.filedropper.com/0postfontload">
+     * 0.pdf
+     * </a>
+     * <p>
+     * Removing the old appearance streams before setting the new field
+     * values removes the compression of the Resident Name and Care
+     * Providers Address fields. In the latter case, though, the lower
+     * part of the field value now is cut off.
+     * </p>
+     * <p>
+     * For some fields only the first two letters are visible. This is
+     * due to them being two character comb fields. These can changed
+     * as in {@link #testFill0DropOldAppearanceNoCombNoMax()}.
+     * </p>
+     * @see #testFill0LikeXenyal()
+     * @see #testFill0DropOldAppearanceNoCombNoMax()
+     * @see #testFill0DropOldAppearanceNoCombNoMaxNoMultiLine()
+     */
+    @Test
+    public void testFill0DropOldAppearance() throws IOException {
+        try (   InputStream originalStream = getClass().getResourceAsStream("0.pdf");
+                InputStream fontStream = getClass().getResourceAsStream("Lato-Regular.ttf"))
+        {
+            PDDocument doc = PDDocument.load(originalStream);
+            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+
+            PDType0Font font = PDType0Font.load(doc, fontStream, false);
+            String font_name = acroForm.getDefaultResources().add(font).getName();
+
+            for (PDField field : acroForm.getFieldTree()) {
+                if (field instanceof PDTextField) {
+                    PDTextField textField = (PDTextField) field;
+                    textField.setDefaultAppearance(String.format("/%s 0 Tf 0 g", font_name));
+                    textField.getWidgets().forEach(w -> w.getAppearance().setNormalAppearance((PDAppearanceEntry)null));
+                    textField.setValue("Test");
+                }
+            }
+            
+
+            doc.save(new File(RESULT_FOLDER, "0-filledDropOldAppearance.pdf"));
+            doc.close();
+        }        
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/56938135/pdfbox-inconsistent-pdtextfield-autosize-behavior-after-setvalue">
+     * PDFBox Inconsistent PDTextField Autosize Behavior after setValue
+     * </a>
+     * <br/>
+     * <a href="http://www.filedropper.com/0postfontload">
+     * 0.pdf
+     * </a>
+     * <p>
+     * Resetting the comb flags and removing maximum lengths fixes the
+     * appearance of the fields in which only the first two letters were
+     * visible.
+     * </p>
+     * <p>
+     * The problem of the lower part of the field value being cut off in
+     * the Care Providers Address fields is due to PDFBox in case of 
+     * multi line text fields using a fixed font height and not fine
+     * tuning the vertical position of the field contents. In the case
+     * at hand this can be fixed as in {@link #testFill0DropOldAppearanceNoCombNoMaxNoMultiLine()}.
+     * </p>
+     * @see #testFill0LikeXenyal()
+     * @see #testFill0DropOldAppearance()
+     * @see #testFill0DropOldAppearanceNoCombNoMaxNoMultiLine()
+     */
+    @Test
+    public void testFill0DropOldAppearanceNoCombNoMax() throws IOException {
+        final int FLAG_COMB = 1 << 24;
+
+        try (   InputStream originalStream = getClass().getResourceAsStream("0.pdf");
+                InputStream fontStream = getClass().getResourceAsStream("Lato-Regular.ttf"))
+        {
+            PDDocument doc = PDDocument.load(originalStream);
+            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+
+            PDType0Font font = PDType0Font.load(doc, fontStream, false);
+            String font_name = acroForm.getDefaultResources().add(font).getName();
+
+            for (PDField field : acroForm.getFieldTree()) {
+                if (field instanceof PDTextField) {
+                    PDTextField textField = (PDTextField) field;
+                    textField.getCOSObject().removeItem(COSName.MAX_LEN);
+                    textField.getCOSObject().setFlag(COSName.FF, FLAG_COMB, false);;
+                    textField.setDefaultAppearance(String.format("/%s 0 Tf 0 g", font_name));
+                    textField.getWidgets().forEach(w -> w.getAppearance().setNormalAppearance((PDAppearanceEntry)null));
+                    textField.setValue("Test");
+                }
+            }
+            
+
+            doc.save(new File(RESULT_FOLDER, "0-filledDropOldAppearanceNoCombNoMax.pdf"));
+            doc.close();
+        }        
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/56938135/pdfbox-inconsistent-pdtextfield-autosize-behavior-after-setvalue">
+     * PDFBox Inconsistent PDTextField Autosize Behavior after setValue
+     * </a>
+     * <br/>
+     * <a href="http://www.filedropper.com/0postfontload">
+     * 0.pdf
+     * </a>
+     * <p>
+     * By resetting the MultiLine flags, too, one eventually gets rid
+     * of the problem of the lower part of the field value being cut
+     * off in the Care Providers Address fields. This actually should
+     * be considered an issue of PDFBox, though, not of the source PDF
+     * here.
+     * </p>
+     * @see #testFill0LikeXenyal()
+     * @see #testFill0DropOldAppearance()
+     * @see #testFill0DropOldAppearanceNoCombNoMax()
+     */
+    @Test
+    public void testFill0DropOldAppearanceNoCombNoMaxNoMultiLine() throws IOException {
+        final int FLAG_MULTILINE = 1 << 12;
+        final int FLAG_COMB = 1 << 24;
+
+        try (   InputStream originalStream = getClass().getResourceAsStream("0.pdf");
+                InputStream fontStream = getClass().getResourceAsStream("Lato-Regular.ttf"))
+        {
+            PDDocument doc = PDDocument.load(originalStream);
+            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+
+            PDType0Font font = PDType0Font.load(doc, fontStream, false);
+            String font_name = acroForm.getDefaultResources().add(font).getName();
+
+            for (PDField field : acroForm.getFieldTree()) {
+                if (field instanceof PDTextField) {
+                    PDTextField textField = (PDTextField) field;
+                    textField.getCOSObject().removeItem(COSName.MAX_LEN);
+                    textField.getCOSObject().setFlag(COSName.FF, FLAG_COMB | FLAG_MULTILINE, false);;
+                    textField.setDefaultAppearance(String.format("/%s 0 Tf 0 g", font_name));
+                    textField.getWidgets().forEach(w -> w.getAppearance().setNormalAppearance((PDAppearanceEntry)null));
+                    textField.setValue("Test");
+                }
+            }
+            
+
+            doc.save(new File(RESULT_FOLDER, "0-filledDropOldAppearanceNoCombNoMaxNoMultiLine.pdf"));
+            doc.close();
+        }        
     }
 }
