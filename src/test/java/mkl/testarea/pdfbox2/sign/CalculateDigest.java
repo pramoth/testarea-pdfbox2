@@ -3,6 +3,7 @@ package mkl.testarea.pdfbox2.sign;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.Signature;
@@ -15,14 +16,19 @@ import java.util.List;
 import javax.crypto.Cipher;
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.cms.Attribute;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
@@ -47,6 +53,10 @@ public class CalculateDigest {
      * <a href="https://stackoverflow.com/questions/57926872/signed-pdf-content-digest-that-was-calculated-during-verification-is-diffrent-th">
      * Signed PDF content digest that was calculated during verification is diffrent than decripted digest from signature
      * </a>
+     * <br/>
+     * <a href="https://drive.google.com/open?id=1UlOZOp-UYllK7Ra35dggccoWdhcb_Ntp">
+     * TEST-signed-pades-baseline-b.pdf
+     * </a>
      * <p>
      * The code in {@link #verifyPDF(String)} compares the wrong CMS
      * hash with the has of the signed byte ranges, it compares the
@@ -57,9 +67,10 @@ public class CalculateDigest {
      */
     @Test
     public void testVerifyPdfLikeUser2893427() throws Exception {
-        verifyPDF("src\\test\\resources\\mkl\\testarea\\pdfbox2\\sign\\pkcs7DetachedFailure.pdf");
+        verifyPDF("src\\test\\resources\\mkl\\testarea\\pdfbox2\\sign\\TEST-signed-pades-baseline-b.pdf");
     }
 
+    /** @see #testVerifyPdfLikeUser2893427() */
     public static void verifyPDF(String fileName) throws Exception {
         File fileDoc = new File(fileName);
         PDDocument document = PDDocument.load(fileDoc);
@@ -193,5 +204,35 @@ public class CalculateDigest {
             ;
         }
         ;
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/57926872/signed-pdf-content-digest-that-was-calculated-during-verification-is-diffrent-th">
+     * Signed PDF content digest that was calculated during verification is diffrent than decripted digest from signature
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/open?id=1UlOZOp-UYllK7Ra35dggccoWdhcb_Ntp">
+     * TEST-signed-pades-baseline-b.pdf
+     * </a>
+     * <p>
+     * The code here demonstrates how to retrieve the messageDigest
+     * signed attribute value from a signed PDF. For production use
+     * obviously some null checks are required.
+     * </p>
+     */
+    @Test
+    public void testExtractMessageDigestAttributeForUser2893427() throws IOException, CMSException {
+        try (   InputStream resource = getClass().getResourceAsStream("TEST-signed-pades-baseline-b.pdf")   ) {
+            byte[] bytes = IOUtils.toByteArray(resource);
+            PDDocument document = PDDocument.load(bytes);
+            List<PDSignature> signatures = document.getSignatureDictionaries();
+            PDSignature sig = signatures.get(0);
+            byte[] cmsBytes = sig.getContents(bytes);
+            CMSSignedData cms = new CMSSignedData(cmsBytes);
+            SignerInformation signerInformation = cms.getSignerInfos().iterator().next();
+            Attribute attribute = signerInformation.getSignedAttributes().get(PKCSObjectIdentifiers.pkcs_9_at_messageDigest);
+            ASN1Encodable value = attribute.getAttributeValues()[0];
+            System.out.printf("MessageDigest attribute value: %s\n", value);
+        }
     }
 }
