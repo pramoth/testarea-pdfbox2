@@ -1,4 +1,4 @@
-package mkl.testarea.pdfbox2.meta;
+package mkl.testarea.pdfbox2.split;
 
 import java.io.File;
 import java.io.IOException;
