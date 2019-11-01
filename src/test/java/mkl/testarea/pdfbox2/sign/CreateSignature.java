@@ -1,5 +1,6 @@
 package mkl.testarea.pdfbox2.sign;
 
+import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,8 +26,10 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -59,6 +62,8 @@ import org.bouncycastle.util.Store;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import mkl.testarea.pdfbox2.extract.BoundingBoxFinder;
+
 /**
  * @author mkl
  */
@@ -79,7 +84,8 @@ public class CreateSignature
         RESULT_FOLDER.mkdirs();
 
         BouncyCastleProvider bcp = new BouncyCastleProvider();
-        Security.insertProviderAt(bcp, 1);
+        Security.addProvider(bcp);
+        //Security.insertProviderAt(bcp, 1);
 
         ks = KeyStore.getInstance(KeyStore.getDefaultType());
         ks.load(new FileInputStream(KEYSTORE), PASSWORD);
@@ -460,5 +466,79 @@ public class CreateSignature
         {
             signPAdES(pdDocument, result, data -> signWithSeparatedHashing(data));
         }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/58427451/how-to-apply-digital-signature-image-at-bottom-left-position-in-the-last-page-of">
+     * How to apply digital signature image at bottom left position in the last page of pdf using pdfbox?
+     * </a>
+     * <br/>
+     * <a href="http://www.orimi.com/pdf-test.pdf">
+     * pdf-test.pdf
+     * </a>
+     * <p>
+     * As the OP found out himself, the `BoundingBoxFinder` coordinates
+     * could not be used as is in the `CreateVisibleSignature`. This test
+     * demonstrates the required transformation with the example document
+     * apparently used by the OP.
+     * </p>
+     */
+    @Test
+    public void signLikeHemantPdfTest() throws IOException, GeneralSecurityException {
+        File documentFile = new File("src/test/resources/mkl/testarea/pdfbox2/sign/pdf-test.pdf");
+        File signedDocumentFile = new File(RESULT_FOLDER, "pdf-test-signedLikeHemant.pdf");
+
+        Rectangle2D boundingBox;
+        PDRectangle mediaBox;
+        try (   PDDocument document = PDDocument.load(documentFile) ) {
+            PDPage pdPage = document.getPage(0);
+            BoundingBoxFinder boundingBoxFinder = new BoundingBoxFinder(pdPage);
+            boundingBoxFinder.processPage(pdPage);
+            boundingBox = boundingBoxFinder.getBoundingBox();
+            mediaBox = pdPage.getMediaBox();
+        }
+
+        CreateVisibleSignature signing = new CreateVisibleSignature(ks, PASSWORD.clone());
+        try (   InputStream imageStream = getClass().getResourceAsStream("/mkl/testarea/pdfbox2/content/Willi-1.jpg")) {
+            signing.setVisibleSignDesigner(documentFile.getPath(), (int)boundingBox.getX(), (int)(mediaBox.getUpperRightY() - boundingBox.getY()), -50, imageStream, 1);
+        }
+        signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
+        signing.setExternalSigning(false);
+        signing.signPDF(documentFile, signedDocumentFile, null);
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/58427451/how-to-apply-digital-signature-image-at-bottom-left-position-in-the-last-page-of">
+     * How to apply digital signature image at bottom left position in the last page of pdf using pdfbox?
+     * </a>
+     * <p>
+     * As the OP found out himself, the `BoundingBoxFinder` coordinates
+     * could not be used as is in the `CreateVisibleSignature`. This test
+     * demonstrates the required transformation with an arbitrary example
+     * document.
+     * </p>
+     */
+    @Test
+    public void signLikeHemantTest() throws IOException, GeneralSecurityException {
+        File documentFile = new File("src/test/resources/mkl/testarea/pdfbox2/sign/test.pdf");
+        File signedDocumentFile = new File(RESULT_FOLDER, "test-signedLikeHemant.pdf");
+
+        Rectangle2D boundingBox;
+        PDRectangle mediaBox;
+        try (   PDDocument document = PDDocument.load(documentFile) ) {
+            PDPage pdPage = document.getPage(0);
+            BoundingBoxFinder boundingBoxFinder = new BoundingBoxFinder(pdPage);
+            boundingBoxFinder.processPage(pdPage);
+            boundingBox = boundingBoxFinder.getBoundingBox();
+            mediaBox = pdPage.getMediaBox();
+        }
+
+        CreateVisibleSignature signing = new CreateVisibleSignature(ks, PASSWORD.clone());
+        try (   InputStream imageStream = getClass().getResourceAsStream("/mkl/testarea/pdfbox2/content/Willi-1.jpg")) {
+            signing.setVisibleSignDesigner(documentFile.getPath(), (int)boundingBox.getX(), (int)(mediaBox.getUpperRightY() - boundingBox.getY()), -50, imageStream, 1);
+        }
+        signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
+        signing.setExternalSigning(false);
+        signing.signPDF(documentFile, signedDocumentFile, null);
     }
 }
