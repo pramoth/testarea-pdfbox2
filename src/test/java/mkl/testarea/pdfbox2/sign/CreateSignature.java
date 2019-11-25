@@ -324,7 +324,7 @@ public class CreateSignature
         {
             signExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
         }
-}
+    }
 
     /**
      * <p>
@@ -540,5 +540,29 @@ public class CreateSignature
         signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
         signing.setExternalSigning(false);
         signing.signPDF(documentFile, signedDocumentFile, null);
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/59027388/signing-pdf-with-multiple-signature-fields-using-pdfbox-2-0-17">
+     * Signing PDF with multiple signature fields using PDFBox 2.0.17
+     * </a>
+     * <br/>
+     * <a href="https://github.com/lawrencelkp/pdfboxtest">
+     * Fillable-2s.pdf
+     * </a>
+     * <p>
+     * {@link #signExistingFieldWithLock(PDDocument, OutputStream, SignatureInterface)}
+     * successfully signs the first signature field of the document.
+     * </p>
+     */
+    @Test
+    public void testSignFillable2sWithLocking() throws IOException
+    {
+        try (   InputStream resource = getClass().getResourceAsStream("Fillable-2s.pdf");
+                OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "Fillable-2s-SignedWithLocking.pdf"));
+                PDDocument pdDocument = PDDocument.load(resource)   )
+        {
+            signExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
+        }
     }
 }
