@@ -20,22 +20,30 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDNonTerminalField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTerminalField;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSet;
@@ -563,6 +571,120 @@ public class CreateSignature
                 PDDocument pdDocument = PDDocument.load(resource)   )
         {
             signExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
+        }
+    }
+
+    /**
+     * <p>
+     * A minimal signing frame work merely requiring a {@link SignatureInterface}
+     * instance signing an existing field and actually locking fields the transform
+     * requires to be locked.
+     * </p>
+     * @see #signExistingFieldWithLock(PDDocument, OutputStream, SignatureInterface)
+     */
+    void signAndLockExistingFieldWithLock(PDDocument document, OutputStream output, SignatureInterface signatureInterface) throws IOException
+    {
+        PDSignatureField signatureField = document.getSignatureFields().get(0);
+        PDSignature signature = new PDSignature();
+        signatureField.setValue(signature);
+
+        COSBase lock = signatureField.getCOSObject().getDictionaryObject(COS_NAME_LOCK);
+        if (lock instanceof COSDictionary)
+        {
+            COSDictionary lockDict = (COSDictionary) lock;
+            COSDictionary transformParams = new COSDictionary(lockDict);
+            transformParams.setItem(COSName.TYPE, COSName.getPDFName("TransformParams"));
+            transformParams.setItem(COSName.V, COSName.getPDFName("1.2"));
+            transformParams.setDirect(true);
+            COSDictionary sigRef = new COSDictionary();
+            sigRef.setItem(COSName.TYPE, COSName.getPDFName("SigRef"));
+            sigRef.setItem(COSName.getPDFName("TransformParams"), transformParams);
+            sigRef.setItem(COSName.getPDFName("TransformMethod"), COSName.getPDFName("FieldMDP"));
+            sigRef.setItem(COSName.getPDFName("Data"), document.getDocumentCatalog());
+            sigRef.setDirect(true);
+            COSArray referenceArray = new COSArray();
+            referenceArray.add(sigRef);
+            signature.getCOSObject().setItem(COSName.getPDFName("Reference"), referenceArray);
+
+            final Predicate<PDField> shallBeLocked;
+            final COSArray fields = lockDict.getCOSArray(COSName.FIELDS);
+            final List<String> fieldNames = fields == null ? Collections.emptyList() :
+                fields.toList().stream().filter(c -> (c instanceof COSString)).map(s -> ((COSString)s).getString()).collect(Collectors.toList());
+            final COSName action = lockDict.getCOSName(COSName.getPDFName("Action"));
+            if (action.equals(COSName.getPDFName("Include"))) {
+                shallBeLocked = f -> fieldNames.contains(f.getFullyQualifiedName());
+            } else if (action.equals(COSName.getPDFName("Exclude"))) {
+                shallBeLocked = f -> !fieldNames.contains(f.getFullyQualifiedName());
+            } else if (action.equals(COSName.getPDFName("All"))) {
+                shallBeLocked = f -> true;
+            } else { // unknown action, lock nothing
+                shallBeLocked = f -> false;
+            }
+            lockFields(document.getDocumentCatalog().getAcroForm().getFields(), shallBeLocked);
+        }
+
+        signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
+        signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
+        signature.setName("blablabla");
+        signature.setLocation("blablabla");
+        signature.setReason("blablabla");
+        signature.setSignDate(Calendar.getInstance());
+        document.addSignature(signature);
+        ExternalSigningSupport externalSigning =
+                document.saveIncrementalForExternalSigning(output);
+        // invoke external signature service
+        byte[] cmsSignature = signatureInterface.sign(externalSigning.getContent());
+        // set signature bytes received from the service
+        externalSigning.setSignature(cmsSignature);
+    }
+
+    /** @see #signAndLockExistingFieldWithLock(PDDocument, OutputStream, SignatureInterface) */
+    boolean lockFields(List<PDField> fields, Predicate<PDField> shallBeLocked) {
+        boolean isUpdated = false;
+        if (fields != null) {
+            for (PDField field : fields) {
+                if (shallBeLocked.test(field)) {
+                    field.setFieldFlags(field.getFieldFlags() | 1);
+                    if (field instanceof PDTerminalField) {
+                        for (PDAnnotationWidget widget : ((PDTerminalField)field).getWidgets())
+                            widget.setLocked(true);
+                    }
+                    isUpdated = true;
+                }
+                if (field instanceof PDNonTerminalField) {
+                    if (lockFields(((PDNonTerminalField)field).getChildren(), shallBeLocked))
+                        isUpdated = true;
+                }
+                if (isUpdated)
+                    field.getCOSObject().setNeedToBeUpdated(true);
+            }
+        }
+        return isUpdated;
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/59027388/signing-pdf-with-multiple-signature-fields-using-pdfbox-2-0-17">
+     * Signing PDF with multiple signature fields using PDFBox 2.0.17
+     * </a>
+     * <br/>
+     * <a href="https://github.com/lawrencelkp/pdfboxtest">
+     * Fillable-2s.pdf
+     * </a>
+     * <p>
+     * {@link #signAndLockExistingFieldWithLock(PDDocument, OutputStream, SignatureInterface)}
+     * successfully signs the first signature field of the document while at the same time
+     * making the locked fields read only and locking their widgets.
+     * </p>
+     */
+    @Test
+    public void testSignAndLockFillable2sWithLocking() throws IOException
+    {
+        try (   InputStream resource = getClass().getResourceAsStream("Fillable-2s.pdf");
+                OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "Fillable-2s-SignedAndLockedWithLocking.pdf"));
+                PDDocument pdDocument = PDDocument.load(resource)   )
+        {
+            pdDocument.getDocumentCatalog().getAcroForm().getField("Text1").setValue("Text1");
+            signAndLockExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
         }
     }
 }
