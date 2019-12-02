@@ -690,4 +690,28 @@ public class CreateSignature
             signAndLockExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
         }
     }
+
+    /**
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-4702">
+     * signature verification in Adobe products
+     * </a>
+     * <br/>
+     * <a href="https://issues.apache.org/jira/secure/attachment/12987251/pdfbox-4702-unsigned.pdf">
+     * pdfbox-4702-unsigned.pd
+     * </a>
+     * <p>
+     * {@link #signAndLockExistingFieldWithLock(PDDocument, OutputStream, SignatureInterface)}
+     * successfully signs the signature field of the document.
+     * </p>
+     */
+    @Test
+    public void testSignAndLockPdfbox4702UnsignedWithLocking() throws IOException
+    {
+        try (   InputStream resource = getClass().getResourceAsStream("pdfbox-4702-unsigned.pdf");
+                OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "pdfbox-4702-unsigned-SignedAndLockedWithLocking.pdf"));
+                PDDocument pdDocument = PDDocument.load(resource)   )
+        {
+            signAndLockExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
+        }
+    }
 }
