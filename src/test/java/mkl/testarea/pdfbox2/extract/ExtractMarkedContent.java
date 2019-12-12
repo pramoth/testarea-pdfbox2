@@ -47,7 +47,44 @@ public class ExtractMarkedContent {
      */
     @Test
     public void testExtractTestWPhromma() throws IOException {
+        System.out.printf("\n\n===\n%s\n===\n", "testWPhromma.pdf");
         try (   InputStream resource = getClass().getResourceAsStream("testWPhromma.pdf")) {
+            PDDocument document = PDDocument.load(resource);
+
+            Map<PDPage, Map<Integer, PDMarkedContent>> markedContents = new HashMap<>();
+
+            for (PDPage page : document.getPages()) {
+                PDFMarkedContentExtractor extractor = new PDFMarkedContentExtractor();
+                extractor.processPage(page);
+
+                Map<Integer, PDMarkedContent> theseMarkedContents = new HashMap<>();
+                markedContents.put(page, theseMarkedContents);
+                for (PDMarkedContent markedContent : extractor.getMarkedContents()) {
+                    theseMarkedContents.put(markedContent.getMCID(), markedContent);
+                }
+            }
+
+            PDStructureNode root = document.getDocumentCatalog().getStructureTreeRoot();
+            showStructure(root, markedContents);
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/59192443/get-tags-related-bboxs-even-though-there-is-no-attributes-a-in-document-cata">
+     * Get tag's related BBox's even though there is no attributes (/A in document catalog structure) related to Layout in PDFBox?
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/file/d/1_-tuWuReaTvrDsqQwldTnPYrMHSpXIWp/view?usp=sharing">
+     * res_multipage.pdf
+     * </a>
+     * <p>
+     * This test shows how to, in principle, extract tagged text from this document.
+     * </p>
+     */
+    @Test
+    public void testExtractResMultipage() throws IOException {
+        System.out.printf("\n\n===\n%s\n===\n", "res_multipage.pdf");
+        try (   InputStream resource = getClass().getResourceAsStream("res_multipage.pdf")) {
             PDDocument document = PDDocument.load(resource);
 
             Map<PDPage, Map<Integer, PDMarkedContent>> markedContents = new HashMap<>();
