@@ -34,4 +34,29 @@ public class OpenFile
         }
     }
 
+    /**
+     * <a href="https://stackoverflow.com/questions/59604736/taking-screenshots-from-pdf-file-with-apache-pdfbox">
+     * Taking screenshots from PDF file with Apache PDFBox
+     * </a>
+     * <br/>
+     * <a href="http://aplaidshirt.epizy.com/samplePDF.pdf">
+     * samplePDF.pdf
+     * </a>
+     * <p>
+     * According to the stack trace the error occurred during
+     * PDDocument.load. Thus, this test tries to load the example
+     * file. Unfortunately, no error happens. Thus, this might be
+     * an issue in the OP's version of PDFBox which meanwhile is
+     * fixed. 
+     * </p>
+     */
+    @Test
+    public void testOpenSamplePDFPlaidshirt() throws IOException
+    {
+        try ( InputStream resource = getClass().getResourceAsStream("samplePDF.pdf") )
+        {
+            PDDocument pdfdocument = PDDocument.load(resource);
+            System.out.printf("Producer of plaidshirt's samplePDF.pdf: %s\n", pdfdocument.getDocumentInformation().getProducer());
+        }
+    }
 }
