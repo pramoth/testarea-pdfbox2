@@ -179,7 +179,7 @@ public class CreateMultipleVisualizations implements SignatureInterface {
         List<PDField> acroFormFields = acroForm.getFields();
 
         PDSignatureField signatureField = new PDSignatureField(acroForm);
-        signatureField.setSignature(signature);
+        signatureField.setValue(signature);
         PDAnnotationWidget widget = signatureField.getWidgets().get(0);
         acroFormFields.add(signatureField);
 

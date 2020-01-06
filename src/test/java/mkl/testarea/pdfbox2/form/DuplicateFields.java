@@ -117,7 +117,7 @@ public class DuplicateFields
             textBox.setDefaultAppearance("/Helv 12 Tf 0 0 1 rg");
             acroForm.getFields().add(textBox);
 
-            PDAnnotationWidget widget = textBox.getWidget();
+            PDAnnotationWidget widget = textBox.getWidgets().get(0);
             PDRectangle rectB = new PDRectangle(50, 650, 250, 50);
             widget.setRectangle(rectB);
             page1.getAnnotations().add(widget);
@@ -133,7 +133,7 @@ public class DuplicateFields
             textBox.setDefaultAppearance("/Helv 12 Tf 0 0 1 rg");
             acroForm.getFields().add(textBox);
 
-            widget = textBox.getWidget();
+            widget = textBox.getWidgets().get(0);
             PDRectangle rectC = new PDRectangle(50, 550, 250, 50);
             widget.setRectangle(rectC);
             page1.getAnnotations().add(widget);
@@ -145,7 +145,7 @@ public class DuplicateFields
             textBox.setDefaultAppearance("/Helv 12 Tf 0 0 1 rg");
             acroForm.getFields().add(textBox);
 
-            widget = textBox.getWidget();
+            widget = textBox.getWidgets().get(0);
             widget.setRectangle(rectC);
             page2.getAnnotations().add(widget);
 
@@ -158,7 +158,7 @@ public class DuplicateFields
             textBox.setPartialName("SampleFieldD");
             textBox.setDefaultAppearance("/Helv 12 Tf 0 0 1 rg");
 
-            widget = textBox.getWidget();
+            widget = textBox.getWidgets().get(0);
             PDRectangle rectD = new PDRectangle(50, 450, 250, 50);
             widget.setRectangle(rectD);
             page1.getAnnotations().add(widget);
@@ -169,7 +169,7 @@ public class DuplicateFields
             textBox.setPartialName("SampleFieldD");
             textBox.setDefaultAppearance("/Helv 12 Tf 0 0 1 rg");
 
-            widget = textBox.getWidget();
+            widget = textBox.getWidgets().get(0);
             widget.setRectangle(rectD);
             page2.getAnnotations().add(widget);
 
@@ -209,9 +209,9 @@ public class DuplicateFields
 
             PDTextField tempField = new PDTextField(acroForm);
             tempField.setDefaultAppearance("/Helv 12 Tf 0 0 1 rg");
-            tempField.getWidget().setRectangle(rectE1);
+            tempField.getWidgets().get(0).setRectangle(rectE1);
             tempField.setValue("E");
-            PDAppearanceDictionary appearance = tempField.getWidget().getAppearance();
+            PDAppearanceDictionary appearance = tempField.getWidgets().get(0).getAppearance();
             widget1.setAppearance(appearance);
             widget2.setAppearance(appearance);
 
@@ -245,9 +245,9 @@ public class DuplicateFields
 
             tempField = new PDTextField(acroForm);
             tempField.setDefaultAppearance("/Helv 12 Tf 1 0 0 rg");
-            tempField.getWidget().setRectangle(rectE2);
+            tempField.getWidgets().get(0).setRectangle(rectE2);
             tempField.setValue("E");
-            appearance = tempField.getWidget().getAppearance();
+            appearance = tempField.getWidgets().get(0).getAppearance();
             widget1.setAppearance(appearance);
             widget2.setAppearance(appearance);
 
