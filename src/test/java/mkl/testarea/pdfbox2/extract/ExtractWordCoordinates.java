@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
@@ -43,7 +44,7 @@ public class ExtractWordCoordinates {
     @Test
     public void testExtractWordsForGoodJuJu() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("apache.pdf")) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new GetWordLocationAndSize();
             stripper.setSortByPosition( true );
             stripper.setStartPage( 0 );

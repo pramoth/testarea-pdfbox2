@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class FormStability {
     @Test
     public void testLoadAndSaveAByBee() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("a.pdf")) {
-            PDDocument doc = PDDocument.load(resource);
+            PDDocument doc = Loader.loadPDF(resource);
             doc.save(new File(RESULT_FOLDER, "a-resaved.pdf"));
         }
     }

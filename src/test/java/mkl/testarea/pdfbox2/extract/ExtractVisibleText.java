@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Collections;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.BeforeClass;
@@ -38,7 +39,7 @@ public class ExtractVisibleText {
     @Test
     public void testExtractFromRevTeaser09072016() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("RevTeaser09072016.pdf")  ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFVisibleTextStripper(true);
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -72,7 +73,7 @@ public class ExtractVisibleText {
     @Test
     public void testTestDmitryK() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("testDmitryK.pdf")  ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFVisibleTextStripper();
             stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -105,7 +106,7 @@ public class ExtractVisibleText {
     @Test
     public void testTest2DmitryK() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("test2DmitryK.pdf")  ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFVisibleTextStripper();
             stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -134,7 +135,7 @@ public class ExtractVisibleText {
     @Test
     public void test00000000000005fw6q() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("00000000000005fw6q.pdf")  ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFVisibleTextStripper();
             stripper.setSortByPosition(true);
             String text = stripper.getText(document);

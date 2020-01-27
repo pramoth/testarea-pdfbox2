@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -58,7 +59,7 @@ public class AcroFormPopulator {
 
     void populateAndCopy(String originalPdf, String targetPdf, Map<String, String> data, boolean flatten) throws IOException {
         File file = new File(originalPdf);
-        PDDocument document = PDDocument.load(file);
+        PDDocument document = Loader.loadPDF(file);
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
 
         for (Map.Entry<String, String> item : data.entrySet()) {

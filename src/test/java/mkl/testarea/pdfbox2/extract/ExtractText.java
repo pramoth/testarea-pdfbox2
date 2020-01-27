@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.operator.color.SetNonStrokingColorN;
 import org.apache.pdfbox.contentstream.operator.color.SetNonStrokingColorSpace;
 import org.apache.pdfbox.cos.COSBase;
@@ -62,7 +63,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("PnL_500010_0314.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -91,7 +92,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("Bal_532935_0314.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -122,7 +123,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("Park_Efficient_and_Robust_CVPR_2016_paper.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -150,7 +151,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("03 WP Enterprise BlackBerry Compete Datasheet_041612 FINAL DRAFT.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -179,7 +180,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("test-2.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
 
@@ -208,7 +209,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("test-2.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 
             for (int pageNr = 0; pageNr < document.getNumberOfPages(); pageNr++)
             {
@@ -278,7 +279,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("NoTemplateInError.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -305,7 +306,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("testFailed.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -335,7 +336,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("testKabirManandhar.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -363,7 +364,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("testSeparation.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper() {
                 @Override
                 protected void processTextPosition(TextPosition text) {
@@ -407,7 +408,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("demo.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -434,7 +435,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("29.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -464,7 +465,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("10-million-password-list-top-1000000.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -493,7 +494,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("284527_7605_CDM_PALET_MEDITERRANEEN_SURGELE_300G_FR_V1.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -507,7 +508,7 @@ public class ExtractText
         for (int i = 0; i < runs; i++) {
             try (   InputStream resource = getClass().getResourceAsStream("284527_7605_CDM_PALET_MEDITERRANEEN_SURGELE_300G_FR_V1.pdf")    )
             {
-                PDDocument document = PDDocument.load(resource);
+                PDDocument document = Loader.loadPDF(resource);
                 PDFTextStripper stripper = new PDFTextStripper();
                 stripper.getText(document);
             }
@@ -535,7 +536,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("284527_7605_CDM_PALET_MEDITERRANEEN_SURGELE_300G_FR_V2.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             //stripper.setSortByPosition(true);
             String text = stripper.getText(document);
@@ -549,7 +550,7 @@ public class ExtractText
         for (int i = 0; i < runs; i++) {
             try (   InputStream resource = getClass().getResourceAsStream("284527_7605_CDM_PALET_MEDITERRANEEN_SURGELE_300G_FR_V2.pdf")    )
             {
-                PDDocument document = PDDocument.load(resource);
+                PDDocument document = Loader.loadPDF(resource);
                 PDFTextStripper stripper = new PDFTextStripper();
                 stripper.getText(document);
             }
@@ -578,7 +579,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("lol.pdf")    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 // Option 1: Remove Rotate entries
 //            for (PDPage page : document.getPages()) {
 //                page.setRotation(0);
@@ -613,7 +614,7 @@ public class ExtractText
     {
         try (   InputStream resource = getClass().getResourceAsStream("cannotExtract.pdf")    )
         {
-            PDDocument document =  PDDocument.load(resource);
+            PDDocument document =  Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
 
@@ -638,7 +639,7 @@ public class ExtractText
     public void testPDFTables_12142005() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("PDFTables_12142005.pdf")    )
         {
-            PDDocument document =  PDDocument.load(resource);
+            PDDocument document =  Loader.loadPDF(resource);
 
             PDFTextStripper textStripper = new PDFTextStripper();
             textStripper.setSortByPosition(true);
@@ -702,7 +703,6 @@ public class ExtractText
             System.out.println("----------------------------------------------------------------");
             System.out.println("Text in the area1-ArtBox : " + "\n" + stripper.getTextForRegion("Test2").trim());
             System.out.println("----------------------------------------------------------------");
-            String str = stripper.getTextForRegion("Test2").trim();
 
             StringBuilder artPlusBleedBox = new StringBuilder();
             artPlusBleedBox.append(stripper.getTextForRegion("Test2").trim());
@@ -754,7 +754,7 @@ public class ExtractText
         PDPage page = null;
         try {
             if (pdfLocation.endsWith(".pdf")) {
-                document = PDDocument.load(new File(pdfLocation));
+                document = Loader.loadPDF(new File(pdfLocation));
                 int getDocumentPageCount = document.getNumberOfPages();
                 System.out.println(getDocumentPageCount);
 
@@ -807,7 +807,7 @@ public class ExtractText
     {
         try (   InputStream resource = new URL("https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf").openStream()    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setStartPage(2);
             stripper.setEndPage(2);
@@ -838,7 +838,7 @@ public class ExtractText
     {
         try (   InputStream resource = new URL("https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf").openStream()    )
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setStartPage(7);
             stripper.setEndPage(7);

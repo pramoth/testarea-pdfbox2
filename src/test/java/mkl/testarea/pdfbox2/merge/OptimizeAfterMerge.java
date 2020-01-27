@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -55,7 +56,7 @@ public class OptimizeAfterMerge {
     @Test
     public void testOptimizeDummy() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("dummy.pdf")  ) {
-            PDDocument pdDocument = PDDocument.load(resource);
+            PDDocument pdDocument = Loader.loadPDF(resource);
 
             optimize(pdDocument);
 
@@ -79,7 +80,7 @@ public class OptimizeAfterMerge {
     @Test
     public void testOptimizeMergedBee() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("mergedBee.pdf")  ) {
-            PDDocument pdDocument = PDDocument.load(resource);
+            PDDocument pdDocument = Loader.loadPDF(resource);
 
             optimize(pdDocument);
 
@@ -457,7 +458,7 @@ public class OptimizeAfterMerge {
     @Test
     public void testOptimizeLikeSchowaveDummy() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("dummy.pdf")  ) {
-            PDDocument doc = PDDocument.load(resource);
+            PDDocument doc = Loader.loadPDF(resource);
 
             Map<String, COSBase> fontFileCache = new HashMap<>();
             for (int pageNumber = 0; pageNumber < doc.getNumberOfPages(); pageNumber++) {

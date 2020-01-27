@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -41,9 +42,9 @@ public class MergeDocuments
      * </a>
      * <br/>
      * <a href="https://www.dropbox.com/sh/elbjegfykxux6wf/AAC8SMU6-7_sAPS7yqgZkDn0a?dl=0">
-     * "00002 - Distribuição - dia 10.11.2016.pdf",
-     * "00041 - Digitação de Documentos - dia 10.11.2016.pdf",
-     * "00041 - Digitação de Documentos - dia 10.11.2016_00042 - Citação para Processo Eletrônico - dia 10.11.2016.pdf" 
+     * "00002 - Distribuiï¿½ï¿½o - dia 10.11.2016.pdf",
+     * "00041 - Digitaï¿½ï¿½o de Documentos - dia 10.11.2016.pdf",
+     * "00041 - Digitaï¿½ï¿½o de Documentos - dia 10.11.2016_00042 - Citaï¿½ï¿½o para Processo Eletrï¿½nico - dia 10.11.2016.pdf" 
      * </a>
      * <p>
      * Given the files the OP shared one cannot reproduce the file size increment
@@ -55,8 +56,8 @@ public class MergeDocuments
     @Test
     public void testMergeLikeArthurMenezes() throws IOException
     {
-        try (   InputStream resource1 = getClass().getResourceAsStream("00002 - Distribuição - dia 10.11.2016.pdf");
-                InputStream resource2 = getClass().getResourceAsStream("00041 - Digitação de Documentos - dia 10.11.2016.pdf");
+        try (   InputStream resource1 = getClass().getResourceAsStream("00002 - Distribuiï¿½ï¿½o - dia 10.11.2016.pdf");
+                InputStream resource2 = getClass().getResourceAsStream("00041 - Digitaï¿½ï¿½o de Documentos - dia 10.11.2016.pdf");
                 FileOutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "MergeArthurMenezes.pdf")) )
         {
             List<String> marcadores = Collections.nCopies(2000, "Test");
@@ -71,22 +72,22 @@ public class MergeDocuments
      * </a>
      * <br/>
      * <a href="https://www.dropbox.com/sh/elbjegfykxux6wf/AAC8SMU6-7_sAPS7yqgZkDn0a?dl=0">
-     * "00002 - Distribuição - dia 10.11.2016.pdf",
-     * "00041 - Digitação de Documentos - dia 10.11.2016.pdf",
-     * "00041 - Digitação de Documentos - dia 10.11.2016_00042 - Citação para Processo Eletrônico - dia 10.11.2016.pdf"
+     * "00002 - Distribuiï¿½ï¿½o - dia 10.11.2016.pdf",
+     * "00041 - Digitaï¿½ï¿½o de Documentos - dia 10.11.2016.pdf",
+     * "00041 - Digitaï¿½ï¿½o de Documentos - dia 10.11.2016_00042 - Citaï¿½ï¿½o para Processo Eletrï¿½nico - dia 10.11.2016.pdf"
      * "00043 - Juntada de AR - dia 10.01.2017.pdf"
      * "00043 - Juntada de AR - dia 10.01.2017_00044 - 37880-20- - dia 10.01.2017.pdf"
-     * "00046 - Ato Ordinatório Praticado - dia 16.01.2017.pdf"
-     * "00047 - Envio de Documento Eletrônico - dia 16.01.2017.pdf"
+     * "00046 - Ato Ordinatï¿½rio Praticado - dia 16.01.2017.pdf"
+     * "00047 - Envio de Documento Eletrï¿½nico - dia 16.01.2017.pdf"
      * "00049 - Juntada - dia 23.01.2017.pdf"
-     * "00049 - Juntada - dia 23.01.2017_00050 - 201700130770 - Petição Eletrônica - dia 23.01.2017.pdf"
-     * "00049 - Juntada - dia 23.01.2017_00050 - 201700130770 - Petição Eletrônica - dia 23.01.2017_00051 - Anexo de Documento - dia 23.01.2017.pdf"
-     * "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016.pdf"
-     * "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016_00011 - Anexo de Documento - dia 10.11.2016.pdf"
-     * "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016_00012 - Anexo de Documento - dia 10.11.2016.pdf"
-     * "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016_00013 - Anexo de Documento - dia 10.11.2016.pdf"
-     * "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016_00036 - Anexo de Documento - dia 10.11.2016.pdf"
-     * "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016_00040 - Anexo de Documento - dia 10.11.2016.pdf"  
+     * "00049 - Juntada - dia 23.01.2017_00050 - 201700130770 - Petiï¿½ï¿½o Eletrï¿½nica - dia 23.01.2017.pdf"
+     * "00049 - Juntada - dia 23.01.2017_00050 - 201700130770 - Petiï¿½ï¿½o Eletrï¿½nica - dia 23.01.2017_00051 - Anexo de Documento - dia 23.01.2017.pdf"
+     * "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016.pdf"
+     * "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016_00011 - Anexo de Documento - dia 10.11.2016.pdf"
+     * "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016_00012 - Anexo de Documento - dia 10.11.2016.pdf"
+     * "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016_00013 - Anexo de Documento - dia 10.11.2016.pdf"
+     * "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016_00036 - Anexo de Documento - dia 10.11.2016.pdf"
+     * "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016_00040 - Anexo de Documento - dia 10.11.2016.pdf"  
      * </a>
      * <p>
      * Using the OP's code the result indeed is exorbitantly large: the individual
@@ -104,22 +105,22 @@ public class MergeDocuments
     public void testMergeManyLikeArthurMenezes() throws IOException
     {
         Collection<String> resourceNames = Arrays.asList(
-                "00002 - Distribuição - dia 10.11.2016.pdf",
-                "00041 - Digitação de Documentos - dia 10.11.2016.pdf",
-                "00041 - Digitação de Documentos - dia 10.11.2016_00042 - Citação para Processo Eletrônico - dia 10.11.2016.pdf",
+                "00002 - Distribuiï¿½ï¿½o - dia 10.11.2016.pdf",
+                "00041 - Digitaï¿½ï¿½o de Documentos - dia 10.11.2016.pdf",
+                "00041 - Digitaï¿½ï¿½o de Documentos - dia 10.11.2016_00042 - Citaï¿½ï¿½o para Processo Eletrï¿½nico - dia 10.11.2016.pdf",
                 "00043 - Juntada de AR - dia 10.01.2017.pdf",
                 "00043 - Juntada de AR - dia 10.01.2017_00044 - 37880-20- - dia 10.01.2017.pdf",
-                "00046 - Ato Ordinatório Praticado - dia 16.01.2017.pdf",
-                "00047 - Envio de Documento Eletrônico - dia 16.01.2017.pdf",
+                "00046 - Ato Ordinatï¿½rio Praticado - dia 16.01.2017.pdf",
+                "00047 - Envio de Documento Eletrï¿½nico - dia 16.01.2017.pdf",
                 "00049 - Juntada - dia 23.01.2017.pdf",
-                "00049 - Juntada - dia 23.01.2017_00050 - 201700130770 - Petição Eletrônica - dia 23.01.2017.pdf",
-                "00049 - Juntada - dia 23.01.2017_00050 - 201700130770 - Petição Eletrônica - dia 23.01.2017_00051 - Anexo de Documento - dia 23.01.2017.pdf",
-                "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016.pdf",
-                "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016_00011 - Anexo de Documento - dia 10.11.2016.pdf",
-                "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016_00012 - Anexo de Documento - dia 10.11.2016.pdf",
-                "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016_00013 - Anexo de Documento - dia 10.11.2016.pdf",
-                "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016_00036 - Anexo de Documento - dia 10.11.2016.pdf",
-                "Petição Incial - dia 10.11.2016_00003 - Petição Inicial - dia 10.11.2016_00040 - Anexo de Documento - dia 10.11.2016.pdf");
+                "00049 - Juntada - dia 23.01.2017_00050 - 201700130770 - Petiï¿½ï¿½o Eletrï¿½nica - dia 23.01.2017.pdf",
+                "00049 - Juntada - dia 23.01.2017_00050 - 201700130770 - Petiï¿½ï¿½o Eletrï¿½nica - dia 23.01.2017_00051 - Anexo de Documento - dia 23.01.2017.pdf",
+                "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016.pdf",
+                "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016_00011 - Anexo de Documento - dia 10.11.2016.pdf",
+                "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016_00012 - Anexo de Documento - dia 10.11.2016.pdf",
+                "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016_00013 - Anexo de Documento - dia 10.11.2016.pdf",
+                "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016_00036 - Anexo de Documento - dia 10.11.2016.pdf",
+                "Petiï¿½ï¿½o Incial - dia 10.11.2016_00003 - Petiï¿½ï¿½o Inicial - dia 10.11.2016_00040 - Anexo de Documento - dia 10.11.2016.pdf");
 
         InputStream anterior = null;
         ByteArrayOutputStream saida = new ByteArrayOutputStream();
@@ -155,12 +156,12 @@ public class MergeDocuments
         MemoryUsageSetting setupMainMemoryOnly = MemoryUsageSetting.setupMainMemoryOnly();
         if (anterior != null)
         {
-            dest = PDDocument.load(anterior, setupMainMemoryOnly);
-            src = PDDocument.load(novo, setupMainMemoryOnly);
+            dest = Loader.loadPDF(anterior, setupMainMemoryOnly);
+            src = Loader.loadPDF(novo, setupMainMemoryOnly);
         }
         else
         {
-            dest = PDDocument.load(novo, setupMainMemoryOnly);
+            dest = Loader.loadPDF(novo, setupMainMemoryOnly);
             src = new PDDocument();
         }
         int totalPages = dest.getNumberOfPages();

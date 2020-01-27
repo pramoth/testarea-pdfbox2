@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
@@ -45,7 +46,7 @@ public class SetRichText {
     @Test
     public void testFormBee() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("formBee.pdf")) {
-            PDDocument pdfDocument = PDDocument.load(resource);
+            PDDocument pdfDocument = Loader.loadPDF(resource);
 
             pdfDocument.getDocument().setIsXRefStream(true);
             PDAcroForm acroForm = pdfDocument.getDocumentCatalog().getAcroForm();
@@ -72,8 +73,8 @@ public class SetRichText {
                     + "</p>"
                     + "</body>";
             String val1Clean = "This is 12pt font, while this is 8pt font. OK?";
-            String val2 = "<body xmlns=\"http://www.w3.org/1999/xhtml\"><p style=\"color:#FF0000;\">Red&#13;</p><p style=\"color:#1E487C;\">Blue&#13;</p></body>";
-            String val2Clean = "Red\rBlue\r";
+            //String val2 = "<body xmlns=\"http://www.w3.org/1999/xhtml\"><p style=\"color:#FF0000;\">Red&#13;</p><p style=\"color:#1E487C;\">Blue&#13;</p></body>";
+            //String val2Clean = "Red\rBlue\r";
             field.setValue(val1Clean);
             field.setRichTextValue(val1);
 

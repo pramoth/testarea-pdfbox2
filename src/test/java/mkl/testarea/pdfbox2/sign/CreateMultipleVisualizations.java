@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
@@ -95,7 +96,7 @@ public class CreateMultipleVisualizations implements SignatureInterface {
     public void testCreateSignatureWithMultipleVisualizations() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("/mkl/testarea/pdfbox2/analyze/test-rivu.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "testSignedMultipleVisualizations.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   )
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             PDAcroForm acroForm = pdDocument.getDocumentCatalog().getAcroForm();
             if (acroForm == null) {
@@ -142,7 +143,7 @@ public class CreateMultipleVisualizations implements SignatureInterface {
     public void testCreateSignatureWithMultipleVisualizationsC10000000713071804294534() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("C10000000713071804294534.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "C10000000713071804294534-SignedMultipleVisualizations.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   )
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             PDAcroForm acroForm = pdDocument.getDocumentCatalog().getAcroForm();
             if (acroForm == null) {
@@ -246,7 +247,7 @@ public class CreateMultipleVisualizations implements SignatureInterface {
         {
             List<Certificate> certList = new ArrayList<>();
             certList.addAll(Arrays.asList(chain));
-            Store certs = new JcaCertStore(certList);
+            Store<?> certs = new JcaCertStore(certList);
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
             org.bouncycastle.asn1.x509.Certificate cert = org.bouncycastle.asn1.x509.Certificate.getInstance(chain[0].getEncoded());
             ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA256WithRSA").build(pk);

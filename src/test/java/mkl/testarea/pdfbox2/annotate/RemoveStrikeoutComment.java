@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -49,7 +50,7 @@ public class RemoveStrikeoutComment {
     @Test
     public void testRemoveLikeStephan() throws IOException {
         try (InputStream resource = getClass().getResourceAsStream("only_fields.pdf")) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             List<PDAnnotation> annotations = new ArrayList<>();
             PDPageTree allPages = document.getDocumentCatalog().getPages();
 
@@ -97,7 +98,7 @@ public class RemoveStrikeoutComment {
     public void testRemoveLikeStephanImproved() throws IOException {
         final COSName POPUP = COSName.getPDFName("Popup");
         try (InputStream resource = getClass().getResourceAsStream("only_fields.pdf")) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             List<PDAnnotation> annotations = new ArrayList<>();
             PDPageTree allPages = document.getDocumentCatalog().getPages();
 

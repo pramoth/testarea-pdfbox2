@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.BeforeClass;
@@ -37,7 +38,7 @@ public class ExtractColorText {
     @Test
     public void testExtractFromFurzoSample() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("furzo Sample.pdf");
-                PDDocument document = PDDocument.load(resource) ) {
+                PDDocument document = Loader.loadPDF(resource) ) {
             PDFTextStripper stripper = new ColorTextStripper();
             String text = stripper.getText(document);
 

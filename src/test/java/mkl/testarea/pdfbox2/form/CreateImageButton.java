@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -109,7 +110,7 @@ public class CreateImageButton
     {
         try (   InputStream resource = getClass().getResourceAsStream("/mkl/testarea/pdfbox2/content/Willi-1.jpg");
                 InputStream sourceDoc = getClass().getResourceAsStream("imageButton.pdf");
-                PDDocument document = PDDocument.load(sourceDoc)) {
+                PDDocument document = Loader.loadPDF(sourceDoc)) {
             PDImageXObject pdImageXObject = JPEGFactory.createFromStream(document, resource);
             float width = 10 * pdImageXObject.getWidth();
             float height = 10 * pdImageXObject.getHeight();

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -69,7 +70,7 @@ public class RenderType3Character
 
         try (   InputStream resource = getClass().getResourceAsStream("4700198773.pdf"))
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 
             PDPage page = document.getPage(0);
             PDResources pageResources = page.getResources();
@@ -144,7 +145,7 @@ public class RenderType3Character
 
         try (   InputStream resource = getClass().getResourceAsStream("sdnlist.pdf"))
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 
             PDPage page = document.getPage(1);
             PDResources pageResources = page.getResources();

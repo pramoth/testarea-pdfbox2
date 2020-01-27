@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -40,7 +41,7 @@ public class AddImage {
         try (   InputStream resource = getClass().getResourceAsStream("/mkl/testarea/pdfbox2/sign/test.pdf");
                 InputStream imageResource = getClass().getResourceAsStream("Willi-1.jpg")   )
         {
-            PDDocument doc = PDDocument.load(resource);
+            PDDocument doc = Loader.loadPDF(resource);
             PDImageXObject pdImage = PDImageXObject.createFromByteArray(doc, ByteStreams.toByteArray(imageResource), "Willi");
 
             int w = pdImage.getWidth();
@@ -80,7 +81,7 @@ public class AddImage {
         try (   InputStream resource = getClass().getResourceAsStream("/mkl/testarea/pdfbox2/sign/test.pdf");
                 InputStream imageResource = getClass().getResourceAsStream("Willi-1.jpg")   )
         {
-            PDDocument doc = PDDocument.load(resource);
+            PDDocument doc = Loader.loadPDF(resource);
             PDImageXObject pdImage = PDImageXObject.createFromByteArray(doc, ByteStreams.toByteArray(imageResource), "Willi");
 
             int w = pdImage.getWidth();
@@ -112,6 +113,7 @@ public class AddImage {
      * This test demonstrates how to clip an image and frame the clipping area.
      * </p>
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testImageAddClipped() throws IOException {
         try (   InputStream imageResource = getClass().getResourceAsStream("Willi-1.jpg")   )

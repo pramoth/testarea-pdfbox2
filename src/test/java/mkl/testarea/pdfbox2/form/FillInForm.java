@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -62,7 +63,7 @@ public class FillInForm
         try (   InputStream originalStream = getClass().getResourceAsStream("FillFormField.pdf") )
         {
             // load the documents
-            PDDocument pdfDocument = PDDocument.load(originalStream);
+            PDDocument pdfDocument = Loader.loadPDF(originalStream);
 
             // get the document catalog
             PDAcroForm acroForm = pdfDocument.getDocumentCatalog().getAcroForm();
@@ -93,7 +94,7 @@ public class FillInForm
     {
         try (   InputStream originalStream = getClass().getResourceAsStream("FillFormField.pdf") )
         {
-            PDDocument pdfDocument = PDDocument.load(originalStream);
+            PDDocument pdfDocument = Loader.loadPDF(originalStream);
             PDAcroForm acroForm = pdfDocument.getDocumentCatalog().getAcroForm();
 
             if (acroForm != null)
@@ -133,7 +134,7 @@ public class FillInForm
     {
         try (   InputStream originalStream = getClass().getResourceAsStream("SR16_ANF_DIP.pdf") )
         {
-            PDDocument pdfDocument = PDDocument.load(originalStream);
+            PDDocument pdfDocument = Loader.loadPDF(originalStream);
             PDAcroForm acroForm = pdfDocument.getDocumentCatalog().getAcroForm();
 
             if (acroForm != null)
@@ -167,7 +168,7 @@ public class FillInForm
     @Test
     public void testFillLikeJuvi() throws IOException {
         try (   InputStream originalStream = getClass().getResourceAsStream("testform.pdf") ) {
-            PDDocument document = PDDocument.load(originalStream);
+            PDDocument document = Loader.loadPDF(originalStream);
             PDDocumentCatalog docCatalog = document.getDocumentCatalog();
             PDAcroForm acroForm = docCatalog.getAcroForm();
 
@@ -208,7 +209,7 @@ public class FillInForm
     public void testLikeKyle() throws IOException {
         try (   InputStream originalStream = getClass().getResourceAsStream("csOnePage.pdf") )
         {
-            PDDocument doc = PDDocument.load(originalStream);
+            PDDocument doc = Loader.loadPDF(originalStream);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
 
             List<String> skillList = Arrays.asList("Athletics","Acrobatics","Sleight of Hand", "Stealth","Acrana", "History","Investigation","Nature", "Religion", "Animal Handling", "Insight", "Medicine", "Perception", "Survival", "Deception", "Intimidation", "Performance", "Persuasion");
@@ -252,7 +253,7 @@ public class FillInForm
         try (   InputStream originalStream = getClass().getResourceAsStream("0.pdf");
                 InputStream fontStream = getClass().getResourceAsStream("Lato-Regular.ttf"))
         {
-            PDDocument doc = PDDocument.load(originalStream);
+            PDDocument doc = Loader.loadPDF(originalStream);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
 
             PDType0Font font = PDType0Font.load(doc, fontStream, false);
@@ -300,7 +301,7 @@ public class FillInForm
         try (   InputStream originalStream = getClass().getResourceAsStream("0.pdf");
                 InputStream fontStream = getClass().getResourceAsStream("Lato-Regular.ttf"))
         {
-            PDDocument doc = PDDocument.load(originalStream);
+            PDDocument doc = Loader.loadPDF(originalStream);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
 
             PDType0Font font = PDType0Font.load(doc, fontStream, false);
@@ -352,7 +353,7 @@ public class FillInForm
         try (   InputStream originalStream = getClass().getResourceAsStream("0.pdf");
                 InputStream fontStream = getClass().getResourceAsStream("Lato-Regular.ttf"))
         {
-            PDDocument doc = PDDocument.load(originalStream);
+            PDDocument doc = Loader.loadPDF(originalStream);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
 
             PDType0Font font = PDType0Font.load(doc, fontStream, false);
@@ -402,7 +403,7 @@ public class FillInForm
         try (   InputStream originalStream = getClass().getResourceAsStream("0.pdf");
                 InputStream fontStream = getClass().getResourceAsStream("Lato-Regular.ttf"))
         {
-            PDDocument doc = PDDocument.load(originalStream);
+            PDDocument doc = Loader.loadPDF(originalStream);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
 
             PDType0Font font = PDType0Font.load(doc, fontStream, false);

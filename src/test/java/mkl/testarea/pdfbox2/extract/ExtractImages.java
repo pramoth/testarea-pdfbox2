@@ -8,6 +8,7 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -54,7 +55,7 @@ public class ExtractImages
     {
         try (   InputStream resource = getClass().getResourceAsStream("10948.pdf"))
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             int page = 1;
             for (PDPage pdPage : document.getPages())
             {
@@ -97,7 +98,7 @@ public class ExtractImages
     {
         try (   InputStream resource = getClass().getResourceAsStream("10948-new.pdf"))
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             int page = 1;
             for (PDPage pdPage : document.getPages())
             {
@@ -162,7 +163,7 @@ public class ExtractImages
     {
         try (   InputStream resource = getClass().getResourceAsStream("10948-new.pdf"))
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             extractPageImages(document, "10948-new-engine-%s-%s%s.%s");
         }
     }
@@ -184,7 +185,7 @@ public class ExtractImages
     {
         try (   InputStream resource = getClass().getResourceAsStream("t1_edited.pdf"))
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             extractPageImages(document, "t1_edited-engine-%s-%s%s.%s");
         }
     }
@@ -206,7 +207,7 @@ public class ExtractImages
     {
         try (   InputStream resource = getClass().getResourceAsStream("1604-Orange_flat_2_edited.pdf"))
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             extractPageImages(document, "1604-Orange_flat_2_edited-engine-%s-%s%s.%s");
         }
     }
@@ -228,7 +229,7 @@ public class ExtractImages
     {
         try (   InputStream resource = getClass().getResourceAsStream("test_fact.pdf"))
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             extractPageImages(document, "test_fact-engine-%s-%s%s.%s");
         }
     }

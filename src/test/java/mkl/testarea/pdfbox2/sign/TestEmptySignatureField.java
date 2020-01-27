@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -57,7 +58,7 @@ public class TestEmptySignatureField
             PDResources resources = new PDResources();
             resources.put(COSName.getPDFName("Helv"), font);
 
-            PDDocument document = PDDocument.load(sourceStream);
+            PDDocument document = Loader.loadPDF(sourceStream);
             PDAcroForm acroForm = new PDAcroForm(document);
             acroForm.setDefaultResources(resources);
             document.getDocumentCatalog().setAcroForm(acroForm);

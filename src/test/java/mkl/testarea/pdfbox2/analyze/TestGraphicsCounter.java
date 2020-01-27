@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -34,7 +35,7 @@ public class TestGraphicsCounter
         try (InputStream resource = getClass().getResourceAsStream("test-rivu.pdf"))
         {
             System.out.println("test-rivu.pdf");
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 
             PDPage page = document.getPage(4);
             PDFStreamParser parser = new PDFStreamParser(page.getContents());

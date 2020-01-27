@@ -16,6 +16,7 @@ import java.util.List;
 import javax.crypto.Cipher;
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -73,7 +74,7 @@ public class CalculateDigest {
     /** @see #testVerifyPdfLikeUser2893427() */
     public static void verifyPDF(String fileName) throws Exception {
         File fileDoc = new File(fileName);
-        PDDocument document = PDDocument.load(fileDoc);
+        PDDocument document = Loader.loadPDF(fileDoc);
         List<PDSignature> signatures = document.getSignatureDictionaries();
         PDSignature sig = signatures.get(0);
         if (sig != null) {
@@ -88,23 +89,24 @@ public class CalculateDigest {
                     System.out.println("---------signatureContent length------------");
                     System.out.println(signatureContent.length);
                     String signatureContentB64 = Base64.getEncoder().encodeToString(signatureContent);
-                    // System.out.println("---------signatureContent b64------------");
-                    // System.out.println("signatureContentB64);
+                    System.out.println("---------signatureContent b64------------");
+                    System.out.println(signatureContentB64);
                     fis = new FileInputStream(fileDoc);
                     byte[] signedContent = sig.getSignedContent(fis);
                     String signedContentB64 = Base64.getEncoder().encodeToString(signedContent);
                     System.out.println("---------signedContent length------------");
                     System.out.println(signedContent.length);
-                    // System.out.println("---------signedContent b64------------");
-                    // System.out.println(signedContentB64);
+                    System.out.println("---------signedContent b64------------");
+                    System.out.println(signedContentB64);
 
                     // Now we construct a PKCS #7 or CMS.
                     CMSProcessable cmsProcessableInputStream = new CMSProcessableByteArray(signedContent);
                     CMSSignedData cmsSignedData = new CMSSignedData(cmsProcessableInputStream, signatureContent);
-                    Store certificatesStore = cmsSignedData.getCertificates();
+                    Store<X509CertificateHolder> certificatesStore = cmsSignedData.getCertificates();
                     Collection<SignerInformation> signers = cmsSignedData.getSignerInfos().getSigners();
                     SignerInformation signerInformation = signers.iterator().next();
-                    Collection matches = certificatesStore.getMatches(signerInformation.getSID());
+                    @SuppressWarnings("unchecked")
+                    Collection<X509CertificateHolder> matches = certificatesStore.getMatches(signerInformation.getSID());
                     X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
                     certificateHolder.getSerialNumber();
                     X509Certificate certFromSignedData = new JcaX509CertificateConverter()
@@ -224,7 +226,7 @@ public class CalculateDigest {
     public void testExtractMessageDigestAttributeForUser2893427() throws IOException, CMSException {
         try (   InputStream resource = getClass().getResourceAsStream("TEST-signed-pades-baseline-b.pdf")   ) {
             byte[] bytes = IOUtils.toByteArray(resource);
-            PDDocument document = PDDocument.load(bytes);
+            PDDocument document = Loader.loadPDF(bytes);
             List<PDSignature> signatures = document.getSignatureDictionaries();
             PDSignature sig = signatures.get(0);
             byte[] cmsBytes = sig.getContents(bytes);

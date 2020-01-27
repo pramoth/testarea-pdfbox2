@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
@@ -37,7 +38,7 @@ public class SearchSubword
     public void testVariables() throws IOException
     {
         try (   InputStream resource = getClass().getResourceAsStream("Variables.pdf");
-                PDDocument document = PDDocument.load(resource);    )
+                PDDocument document = Loader.loadPDF(resource);    )
         {
             System.out.println("\nVariables.pdf\n-------------\n");
             printSubwords(document, "${var1}");

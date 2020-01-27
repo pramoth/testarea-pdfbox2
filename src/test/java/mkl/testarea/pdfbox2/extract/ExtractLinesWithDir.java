@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -60,7 +61,7 @@ public class ExtractLinesWithDir {
         double page_height;
         try (   InputStream resource = getClass().getResourceAsStream("LineRotationTest.pdf")   )
         {
-            document = PDDocument.load(resource);
+            document = Loader.loadPDF(resource);
             numPages = document.getNumberOfPages();
             file = new File(RESULT_FOLDER, "LineRotationTest-LikeYashodhanJoglekar.csv");
             fop = new FileOutputStream(file);
@@ -130,7 +131,7 @@ public class ExtractLinesWithDir {
         int numPages;
         try (   InputStream resource = getClass().getResourceAsStream("LineRotationTest.pdf")   )
         {
-            document = PDDocument.load(resource);
+            document = Loader.loadPDF(resource);
             numPages = document.getNumberOfPages();
             file = new File(RESULT_FOLDER, "LineRotationTest-WithDir.csv");
             fop = new FileOutputStream(file);

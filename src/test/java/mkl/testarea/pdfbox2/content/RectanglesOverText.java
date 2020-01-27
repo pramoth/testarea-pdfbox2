@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -39,7 +40,7 @@ public class RectanglesOverText {
     @Test
     public void testCoverTextByRectanglesInput() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("input.pdf")  ) {
-            PDDocument doc = PDDocument.load(resource);
+            PDDocument doc = Loader.loadPDF(resource);
 
             myStripper stripper = new myStripper();
 
@@ -105,7 +106,7 @@ public class RectanglesOverText {
     @Test
     public void testCoverTextByRectanglesMwbI201711() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("mwb_I_201711.pdf")  ) {
-            PDDocument doc = PDDocument.load(resource);
+            PDDocument doc = Loader.loadPDF(resource);
 
             myStripper stripper = new myStripper();
 

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -118,7 +119,7 @@ public class CreateSignature
     {
         try (   InputStream resource = getClass().getResourceAsStream("test.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "testSignedLikeSnox.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   )
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             sign(pdDocument, result, data -> signBySnox(data));
         }
@@ -140,7 +141,7 @@ public class CreateSignature
     {
         try (   InputStream resource = getClass().getResourceAsStream("test.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "testSignedWithSeparatedHashing.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   )
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             sign(pdDocument, result, data -> signWithSeparatedHashing(data));
         }
@@ -191,7 +192,7 @@ public class CreateSignature
 
             certList.addAll(Arrays.asList(chain));
 
-            Store certs = new JcaCertStore(certList);
+            Store<?> certs = new JcaCertStore(certList);
 
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
 
@@ -309,7 +310,7 @@ public class CreateSignature
     {
         try (   InputStream resource = getClass().getResourceAsStream("test.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "testFieldWithLocking.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   )
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             PDAcroForm acroForm = pdDocument.getDocumentCatalog().getAcroForm();
             if (acroForm == null)
@@ -328,7 +329,7 @@ public class CreateSignature
 
         try (   InputStream resource = new FileInputStream(new File(RESULT_FOLDER, "testFieldWithLocking.pdf"));
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "testSignedWithLocking.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   )
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             signExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
         }
@@ -418,7 +419,7 @@ public class CreateSignature
     @Test
     public void signLikeIperezmel78() throws IOException, GeneralSecurityException {
         try (   InputStream resource = getClass().getResourceAsStream("test.pdf")) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             byte[] bytes = VisibleSignature.sign(document, KEYSTORE, PASSWORD, "/mkl/testarea/pdfbox2/content/Willi-1.jpg");
             Files.write(new File(RESULT_FOLDER, "test-signedLikeIperezmel78.pdf").toPath(),  bytes);
         }
@@ -470,7 +471,7 @@ public class CreateSignature
     {
         try (   InputStream resource = getClass().getResourceAsStream("test.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "testSignedPAdESWithSeparatedHashing.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   )
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             signPAdES(pdDocument, result, data -> signWithSeparatedHashing(data));
         }
@@ -498,7 +499,7 @@ public class CreateSignature
 
         Rectangle2D boundingBox;
         PDRectangle mediaBox;
-        try (   PDDocument document = PDDocument.load(documentFile) ) {
+        try (   PDDocument document = Loader.loadPDF(documentFile) ) {
             PDPage pdPage = document.getPage(0);
             BoundingBoxFinder boundingBoxFinder = new BoundingBoxFinder(pdPage);
             boundingBoxFinder.processPage(pdPage);
@@ -533,7 +534,7 @@ public class CreateSignature
 
         Rectangle2D boundingBox;
         PDRectangle mediaBox;
-        try (   PDDocument document = PDDocument.load(documentFile) ) {
+        try (   PDDocument document = Loader.loadPDF(documentFile) ) {
             PDPage pdPage = document.getPage(0);
             BoundingBoxFinder boundingBoxFinder = new BoundingBoxFinder(pdPage);
             boundingBoxFinder.processPage(pdPage);
@@ -568,7 +569,7 @@ public class CreateSignature
     {
         try (   InputStream resource = getClass().getResourceAsStream("Fillable-2s.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "Fillable-2s-SignedWithLocking.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   )
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             signExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
         }
@@ -684,7 +685,7 @@ public class CreateSignature
     {
         try (   InputStream resource = getClass().getResourceAsStream("Fillable-2s.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "Fillable-2s-SignedAndLockedWithLocking.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   )
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             pdDocument.getDocumentCatalog().getAcroForm().getField("Text1").setValue("Text1");
             signAndLockExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
@@ -709,7 +710,7 @@ public class CreateSignature
     {
         try (   InputStream resource = getClass().getResourceAsStream("pdfbox-4702-unsigned.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "pdfbox-4702-unsigned-SignedAndLockedWithLocking.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   )
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             signAndLockExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
         }

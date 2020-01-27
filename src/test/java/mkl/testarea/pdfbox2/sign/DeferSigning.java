@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.Calendar;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
@@ -57,7 +58,7 @@ public class DeferSigning {
         long id = date.getTimeInMillis();
         try (   InputStream resource = getClass().getResourceAsStream("test.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "testPreparedA.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   ) {
+                PDDocument pdDocument = Loader.loadPDF(resource)   ) {
             PDSignature signature = new PDSignature();
             signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
             signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
@@ -80,7 +81,7 @@ public class DeferSigning {
 
         try (   InputStream resource = getClass().getResourceAsStream("test.pdf");
                 OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "testPreparedB.pdf"));
-                PDDocument pdDocument = PDDocument.load(resource)   ) {
+                PDDocument pdDocument = Loader.loadPDF(resource)   ) {
             PDSignature signature = new PDSignature();
             signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
             signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.fontbox.util.BoundingBox;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -97,7 +98,7 @@ public class VisualizeMarkedContent {
     public void visualize(String resourceName, String resultName) throws IOException {
         System.out.printf("\n\n===\n%s\n===\n", resourceName);
         try (   InputStream resource = getClass().getResourceAsStream(resourceName)) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 
             Map<PDPage, Map<Integer, PDMarkedContent>> markedContents = new HashMap<>();
 
@@ -237,7 +238,8 @@ public class VisualizeMarkedContent {
      * This method determines per page the union of the rectangles in the
      * given maps.
      */
-    Map<PDPage, Rectangle2D> union(Map<PDPage, Rectangle2D>... maps) {
+    @SafeVarargs
+    final Map<PDPage, Rectangle2D> union(Map<PDPage, Rectangle2D>... maps) {
         Map<PDPage, Rectangle2D> result = null;
         for (Map<PDPage, Rectangle2D> map : maps) {
             if (map != null) {

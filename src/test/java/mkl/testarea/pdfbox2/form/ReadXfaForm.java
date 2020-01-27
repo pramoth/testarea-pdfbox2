@@ -1,12 +1,11 @@
 package mkl.testarea.pdfbox2.form;
 
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -104,7 +103,7 @@ public class ReadXfaForm
         try
         {
             // String pass = null;
-            doc = PDDocument.load(file);
+            doc = Loader.loadPDF(file);
             if (doc == null)
                 return null;
             // flattenPDF(doc);

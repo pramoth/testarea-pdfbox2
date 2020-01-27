@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -56,7 +57,7 @@ public class FillInFormSaveIncremental
     {
         try (   InputStream resource = getClass().getResourceAsStream("Skierowanie3.pdf"))
         {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDDocumentCatalog doc = document.getDocumentCatalog();
             PDAcroForm Form = doc.getAcroForm();
 

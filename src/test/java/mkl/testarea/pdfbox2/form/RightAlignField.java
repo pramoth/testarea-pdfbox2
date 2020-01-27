@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -39,7 +40,7 @@ public class RightAlignField {
     @Test
     public void testAlignLikeBee() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("formBee2.pdf")    ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
             PDAcroForm acroForm = documentCatalog.getAcroForm();
 
@@ -68,7 +69,7 @@ public class RightAlignField {
     @Test
     public void testAlignLikeBeeImproved() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("formBee2.pdf")    ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
             PDAcroForm acroForm = documentCatalog.getAcroForm();
 

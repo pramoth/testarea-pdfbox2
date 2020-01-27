@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -49,7 +50,7 @@ public class CheckImageFieldFilled {
     @Test
     public void testCheckXfaGsa500Pdf_v4() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("GSA 500 PDF_v4.pdf");
-                PDDocument document = PDDocument.load(resource);    ) {
+                PDDocument document = Loader.loadPDF(resource);    ) {
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             Document xfaDom = acroForm.getXFA().getDocument();
 
@@ -94,7 +95,7 @@ public class CheckImageFieldFilled {
     @Test
     public void testCheckAcroFormGsa500Pdf_v4() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("GSA 500 PDF_v4.pdf");
-                PDDocument document = PDDocument.load(resource);    ) {
+                PDDocument document = Loader.loadPDF(resource);    ) {
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
 
             System.out.println("Filled image fields (AcroForm) from ImageField1..ImageField105:");

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.BeforeClass;
@@ -36,7 +37,7 @@ public class TestCustomSplitter {
     @Test
     public void testSplitForSaiKrishna() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("/mkl/testarea/pdfbox2/analyze/test-rivu.pdf")) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             Splitter splitter = new CustomSplitter(new int[] {2,6});
 
             List<PDDocument> documents = splitter.split(document);

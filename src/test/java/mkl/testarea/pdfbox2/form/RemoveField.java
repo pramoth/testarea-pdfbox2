@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -52,7 +53,7 @@ public class RemoveField {
     @Test
     public void testRemoveFormIntroSsnManually() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("GeneralForbearance.pdf")    ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
             PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
             PDAcroForm acroForm = documentCatalog.getAcroForm();
 
@@ -107,7 +108,7 @@ public class RemoveField {
     @Test
     public void testRemoveFormIntroSsn() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("GeneralForbearance.pdf")    ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 
             PDField field = removeField(document, "form1[0].#subform[0].FormIntro[0].SSN[0]");
             Assert.assertNotNull("Field not found", field);
@@ -120,7 +121,7 @@ public class RemoveField {
     @Test
     public void testRemoveFormIntro() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("GeneralForbearance.pdf")    ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 
             PDField field = removeField(document, "form1[0].#subform[0].FormIntro[0]");
             Assert.assertNotNull("Field not found", field);
@@ -133,7 +134,7 @@ public class RemoveField {
     @Test
     public void testRemoveFormRoot() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("GeneralForbearance.pdf")    ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 
             PDField field = removeField(document, "form1[0]");
             Assert.assertNotNull("Field not found", field);
@@ -146,7 +147,7 @@ public class RemoveField {
     @Test
     public void testRemoveInvisibleSignature() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("/mkl/testarea/pdfbox2/sign/SignatureVlidationTest.pdf")    ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 
             PDField field = removeField(document, "Signature1");
             Assert.assertNotNull("Field not found", field);
@@ -159,7 +160,7 @@ public class RemoveField {
     @Test
     public void testRemoveVisibleSignature() throws IOException {
         try (   InputStream resource = getClass().getResourceAsStream("2g-fix-certified.pdf")    ) {
-            PDDocument document = PDDocument.load(resource);
+            PDDocument document = Loader.loadPDF(resource);
 
             PDField field = removeField(document, "sig");
             Assert.assertNotNull("Field not found", field);

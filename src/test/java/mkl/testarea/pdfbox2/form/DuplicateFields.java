@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -259,7 +260,7 @@ public class DuplicateFields
         }
 
         try (   InputStream stream = new FileInputStream(new File(RESULT_FOLDER, "duplicateFields.pdf"));
-                PDDocument document = PDDocument.load(stream)  )
+                PDDocument document = Loader.loadPDF(stream)  )
         {
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             for (PDField field : acroForm.getFieldTree())
