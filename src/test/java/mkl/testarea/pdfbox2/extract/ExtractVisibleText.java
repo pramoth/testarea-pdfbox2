@@ -3,6 +3,7 @@ package mkl.testarea.pdfbox2.extract;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.Collections;
 
@@ -142,6 +143,123 @@ public class ExtractVisibleText {
 
             System.out.printf("\n*\n* 00000000000005fw6q.pdf\n*\n%s\n", text);
             Files.write(new File(RESULT_FOLDER, "00000000000005fw6q.txt").toPath(), Collections.singleton(text));
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/59920280/pdfbox-2-0-invisible-lines-on-rotated-page-clip-path-issue">
+     * PDFBox 2.0: invisible lines on rotated page - clip path issue
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/open?id=1Ex03HhDz17xQlsiTIY1cxaT_cb3nyTf3">
+     * 1.pdf
+     * </a>
+     * <p>
+     * Indeed, a number of lines get dropped. An analysis turns out that a glyph
+     * origin positioned right on the clip path border has chances of being dropped.
+     * This is due to different processing of those data with different errors.
+     * </p>
+     * @see #testFat1()
+     */
+    @Test
+    public void test1() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("1.pdf")  ) {
+            PDDocument document = Loader.loadPDF(resource);
+            PDFTextStripper stripper = new PDFVisibleTextStripper(false, new PrintStream(new File(RESULT_FOLDER, "1-drops.txt")));
+            stripper.setSortByPosition(true);
+            String text = stripper.getText(document);
+
+            System.out.printf("\n*\n* 1.pdf\n*\n%s\n", text);
+            Files.write(new File(RESULT_FOLDER, "1.txt").toPath(), Collections.singleton(text));
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/59920280/pdfbox-2-0-invisible-lines-on-rotated-page-clip-path-issue">
+     * PDFBox 2.0: invisible lines on rotated page - clip path issue
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/open?id=1Ex03HhDz17xQlsiTIY1cxaT_cb3nyTf3">
+     * 1.pdf
+     * </a>
+     * <p>
+     * To lessen the impact of floating point errors on coordinate and clip path
+     * comparison, we here use "fat glyph origin coordinate comparisons", we check
+     * whether a small rectangle around the test coordinates intersects the area
+     * instead of checking whether the coordinates are contained in the area.
+     * This indeed fixes the error results.
+     * </p>
+     * @see #test1()
+     */
+    @Test
+    public void testFat1() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("1.pdf")  ) {
+            PDDocument document = Loader.loadPDF(resource);
+            PDFVisibleTextStripper stripper = new PDFVisibleTextStripper();
+            stripper.setUseFatGlyphOrigin(true);
+            stripper.setSortByPosition(true);
+            String text = stripper.getText(document);
+
+            System.out.printf("\n*\n* 1.pdf, fat coordinates\n*\n%s\n", text);
+            Files.write(new File(RESULT_FOLDER, "1-fat.txt").toPath(), Collections.singleton(text));
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/59920280/pdfbox-2-0-invisible-lines-on-rotated-page-clip-path-issue">
+     * PDFBox 2.0: invisible lines on rotated page - clip path issue
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/file/d/1F8vrzcABwxVGdN5W-7etQggY5xKtGplU/view">
+     * RevTeaser09072016.pdf
+     * </a>
+     * <p>
+     * This test checks whether fat coordinate comparisons introduce unwanted
+     * errors by applying to the "RevTeaser09072016.pdf" file
+     * </p>
+     * @see #test1()
+     * @see #testExtractFromRevTeaser09072016()
+     */
+    @Test
+    public void testExtractFatFromRevTeaser09072016() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("RevTeaser09072016.pdf")  ) {
+            PDDocument document = Loader.loadPDF(resource);
+            PDFVisibleTextStripper stripper = new PDFVisibleTextStripper(true);
+            stripper.setUseFatGlyphOrigin(true);
+            //stripper.setSortByPosition(true);
+            String text = stripper.getText(document);
+
+            System.out.printf("\n*\n* RevTeaser09072016.pdf, fat coordinates\n*\n%s\n", text);
+            Files.write(new File(RESULT_FOLDER, "RevTeaser09072016-fat.txt").toPath(), Collections.singleton(text));
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/59920280/pdfbox-2-0-invisible-lines-on-rotated-page-clip-path-issue">
+     * PDFBox 2.0: invisible lines on rotated page - clip path issue
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/open?id=1l0Yt9BJXs09bXcBD7pDbxFiZQQqnuaan">
+     * test2.pdf
+     * </a> as test2DmitryK.pdf
+     * <p>
+     * This test checks whether fat coordinate comparisons introduce unwanted
+     * errors by applying to the "test2DmitryK.pdf" file
+     * </p>
+     * @see #test1()
+     * @see #testTest2DmitryK()
+     */
+    @Test
+    public void testFatTest2DmitryK() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("test2DmitryK.pdf")  ) {
+            PDDocument document = Loader.loadPDF(resource);
+            PDFVisibleTextStripper stripper = new PDFVisibleTextStripper();
+            stripper.setUseFatGlyphOrigin(true);
+            stripper.setSortByPosition(true);
+            String text = stripper.getText(document);
+
+            System.out.printf("\n*\n* test2DmitryK.pdf, fat coordinates\n*\n%s\n", text);
+            Files.write(new File(RESULT_FOLDER, "test2DmitryK-fat.txt").toPath(), Collections.singleton(text));
         }
     }
 }

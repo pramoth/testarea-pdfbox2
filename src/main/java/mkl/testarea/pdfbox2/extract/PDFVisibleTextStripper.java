@@ -4,6 +4,7 @@ import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,9 +44,15 @@ import org.apache.pdfbox.util.Vector;
  */
 public class PDFVisibleTextStripper extends PDFTextStripper {
     private boolean checkEndPointToo = false;
+    private boolean useFatGlyphOrigin = false;
+    private PrintStream dropStream = null;
 
     public PDFVisibleTextStripper() throws IOException {
         this(false);
+    }
+
+    public PDFVisibleTextStripper(boolean checkEndPointToo) throws IOException {
+        this(checkEndPointToo, null);
     }
 
     /**
@@ -54,8 +61,9 @@ public class PDFVisibleTextStripper extends PDFTextStripper {
      *  of a character are stricter, but unfortunately the calculation of the
      *  character baseline end point only work correctly for unrotated text.
      */
-    public PDFVisibleTextStripper(boolean checkEndPointToo) throws IOException {
+    public PDFVisibleTextStripper(boolean checkEndPointToo, PrintStream dropStream) throws IOException {
         this.checkEndPointToo = checkEndPointToo;
+        this.dropStream = dropStream;
 
         addOperator(new AppendRectangleToPath());
         addOperator(new ClipEvenOddRule());
@@ -72,6 +80,10 @@ public class PDFVisibleTextStripper extends PDFTextStripper {
         addOperator(new LineTo());
         addOperator(new MoveTo());
         addOperator(new StrokePath());
+    }
+
+    public void setUseFatGlyphOrigin(boolean useFatGlyphOrigin) {
+        this.useFatGlyphOrigin = useFatGlyphOrigin;
     }
 
     float lowerLeftX = 0;
@@ -96,9 +108,33 @@ public class PDFVisibleTextStripper extends PDFTextStripper {
         PDGraphicsState gs = getGraphicsState();
         Area area = gs.getCurrentClippingPath();
         if (area == null ||
-                (area.contains(lowerLeftX + start.getX(), lowerLeftY + start.getY()) &&
-                        ((!checkEndPointToo) || area.contains(lowerLeftX + end.getX(), lowerLeftY + end.getY()))))
+                (contains(area, lowerLeftX + start.getX(), lowerLeftY + start.getY()) &&
+                        ((!checkEndPointToo) || contains(area, lowerLeftX + end.getX(), lowerLeftY + end.getY()))))
             super.processTextPosition(text);
+        else if (dropStream != null)
+            dropStream.printf("Clipped '%s' at %s,%s\n", text.getUnicode(), lowerLeftX + start.getX(), lowerLeftY + start.getY());
+    }
+
+    /**
+     * <p>
+     * Due to different rounding of numbers in the clip path and text transformations,
+     * it can happen that the glyph origin is exactly on the border of the clip path
+     * but the {@link Area#contains(double, double)} method of the determined clip
+     * path returns false for the determined origin coordinates.
+     * </p>
+     * <p>
+     * To fix this, this method generates a small rectangle around the (glyph origin)
+     * coordinates and checks whether this rectangle intersects the (clip path) area.
+     * </p>
+     */
+    protected boolean contains(Area area, float x, float y) {
+        if (useFatGlyphOrigin) {
+            double length = .0002;
+            double up = 1.0001;
+            double down = .9999;
+            return area.intersects(x < 0 ? x*up : x*down, y < 0 ? y*up : y*down, Math.abs(x*length), Math.abs(y*length));
+        } else
+            return area.contains(x, y);
     }
 
     private GeneralPath linePath = new GeneralPath();
