@@ -1,13 +1,16 @@
 package mkl.testarea.pdfbox2.merge;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.util.Matrix;
@@ -82,5 +85,58 @@ public class DenseMerging {
         }
 
         return document;
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/60052967/how-to-dense-merge-pdf-files-using-pdfbox-2-without-whitespace-near-page-breaks">
+     * How to dense merge PDF files using PDFBox 2 without whitespace near page breaks?
+     * </a>
+     * <p>
+     * This test checks the {@link PageVerticalAnalyzer} functionality.
+     * </p>
+     * <p>
+     * Beware, as mentioned in the {@link PageVerticalAnalyzer} comments,
+     * the processing in particular of curves is incorrect. The curve
+     * used in this test is chosen not to create wrong results due to
+     * this known issue.
+     * </p>
+     */
+    @Test
+    public void testVerticalAnalyzer() throws IOException {
+        PDDocument document = createTextDocument(new PDRectangle(0, 0, 400, 600), 
+                Matrix.getTranslateInstance(30, 300),
+                "Document line 1", "Document line 2", "Document line 3");
+
+        PDPage page = document.getPage(0);
+
+        try (   PDPageContentStream content = new PDPageContentStream(document, page, AppendMode.APPEND, false, true)) {
+            content.setStrokingColor(Color.BLACK);
+            content.moveTo(40, 40);
+            content.lineTo(80, 80);
+            content.lineTo(120, 100);
+            content.stroke();
+
+            content.moveTo(40, 140);
+            content.curveTo(80, 140, 160, 140, 80, 180);
+            content.closeAndFillAndStroke();
+        }
+
+        PageVerticalAnalyzer analyzer = new PageVerticalAnalyzer(page);
+        analyzer.processPage(page);
+        System.out.println(analyzer.getVerticalFlips());
+        
+        try (   PDPageContentStream content = new PDPageContentStream(document, page, AppendMode.APPEND, false, true)) {
+            content.setStrokingColor(Color.RED);
+            content.setLineWidth(3);
+            List<Float> flips = analyzer.getVerticalFlips();
+            float x = page.getCropBox().getLowerLeftX() + 20;
+            for (int i = 0; i < flips.size() - 1; i+=2) {
+                content.moveTo(x, flips.get(i));
+                content.lineTo(x, flips.get(i+1));
+            }
+            content.stroke();
+        }
+
+        document.save(new File(RESULT_FOLDER, "Test Document Vertically Marked.pdf"));
     }
 }
