@@ -200,4 +200,47 @@ public class EditPageContent {
             document.save(new File(RESULT_FOLDER, "Cengage1-sorted-draws.pdf"));
         }
     }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/61202822/remove-large-tokens-from-pdf-using-pdfbox-or-equivalent-library">
+     * Remove Large Tokens from PDF using PDFBox or equivalent library
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/file/d/184waC6PjjDi8yolIZN5R-6vgWGR5SvKl/view?usp=sharing">
+     * kommers_annons_elite.pdf
+     * </a>
+     * <p>
+     * This test shows how to remove text filtered by actual font size.
+     * </p>
+     */
+    @Test
+    public void testRemoveBigTextKommersAnnonsElite() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("kommers_annons_elite.pdf");
+                PDDocument document = Loader.loadPDF(resource)) {
+            PDPage page = document.getPage(0);
+            PdfContentStreamEditor editor = new PdfContentStreamEditor(document, page) {
+                @Override
+                protected void write(ContentStreamWriter contentStreamWriter, Operator operator, List<COSBase> operands) throws IOException {
+                    String operatorString = operator.getName();
+
+                    if (TEXT_SHOWING_OPERATORS.contains(operatorString))
+                    {
+                        float fs = getGraphicsState().getTextState().getFontSize();
+                        Matrix matrix = getTextMatrix().multiply(getGraphicsState().getCurrentTransformationMatrix());
+                        Point2D.Float transformedFsVector = matrix.transformPoint(0, fs);
+                        Point2D.Float transformedOrigin = matrix.transformPoint(0, 0);
+                        double transformedFs = transformedFsVector.distance(transformedOrigin);
+                        if (transformedFs > 50)
+                            return;
+                    }
+
+                    super.write(contentStreamWriter, operator, operands);
+                }
+
+                final List<String> TEXT_SHOWING_OPERATORS = Arrays.asList("Tj", "'", "\"", "TJ");
+            };
+            editor.processPage(page);
+            document.save(new File(RESULT_FOLDER, "kommers_annons_elite-noBigText.pdf"));
+        }
+    }
 }
