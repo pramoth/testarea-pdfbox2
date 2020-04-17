@@ -289,7 +289,10 @@ public class OptimizeAfterMerge {
                 COSDictionary aDict = (COSDictionary) a;
                 COSDictionary bDict = (COSDictionary) b;
                 Set<COSName> keys = aDict.keySet();
-                if (keys.equals(bDict.keySet())) {
+                // As proposed by jchobantonov on github, we can compare dictionary sizes
+                // here instead of the dictionaries themselves as we compare the values
+                // key by key in the body of the if.
+                if (keys.size() == bDict.keySet().size()) {
                     for (COSName key : keys) {
                         if (!resolve(aDict.getItem(key)).equals(bDict.getItem(key)))
                             return false;
