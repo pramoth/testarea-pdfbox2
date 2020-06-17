@@ -45,4 +45,29 @@ public class FlattenForm {
         }
     }
 
+    /**
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-4889">
+     * Cannot flatten this file.
+     * </a>
+     * <br/>
+     * <a href="https://issues.apache.org/jira/secure/attachment/13005793/f1040sb%20test.pdf">
+     * f1040sb test.pdf
+     * </a>
+     * <p>
+     * Indeed, flattening stops with an exception. The cause is the
+     * presence of annotations with a non-empty Rect and an empty
+     * (0×0) BBox. An attempt to scale that empty BBox into the
+     * non-empty Rect causes the exception.
+     * </p>
+     */
+    @Test
+    public void testFlattenF1040sbTest() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("f1040sb test.pdf")    ) {
+            PDDocument pdDocument = Loader.loadPDF(resource);
+
+            pdDocument.getDocumentCatalog().getAcroForm().flatten();
+
+            pdDocument.save(new File(RESULT_FOLDER, "f1040sb test-flattened.pdf"));
+        }
+    }
 }
