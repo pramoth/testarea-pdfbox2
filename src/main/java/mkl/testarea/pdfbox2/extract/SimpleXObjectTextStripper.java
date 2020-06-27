@@ -25,7 +25,6 @@ import org.apache.pdfbox.contentstream.operator.text.ShowText;
 import org.apache.pdfbox.contentstream.operator.text.ShowTextAdjusted;
 import org.apache.pdfbox.contentstream.operator.text.ShowTextLine;
 import org.apache.pdfbox.contentstream.operator.text.ShowTextLineAndSpace;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -86,9 +85,9 @@ public class SimpleXObjectTextStripper extends PDFStreamEngine {
     }
 
     @Override
-    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode, Vector displacement)
+    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
             throws IOException {
-        stringBuilder.append(unicode);
+        stringBuilder.append(font.toUnicode(code));
     }
 
     final StringBuilder stringBuilder = new StringBuilder();
