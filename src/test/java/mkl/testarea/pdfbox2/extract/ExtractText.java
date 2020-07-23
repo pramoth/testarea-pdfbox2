@@ -1,6 +1,7 @@
 package mkl.testarea.pdfbox2.extract;
 
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
@@ -847,6 +848,42 @@ public class ExtractText
 
             System.out.printf("\n*\n* PDF32000_2008.pdf Page ii\n*\n%s\n", text);
             Files.write(new File(RESULT_FOLDER, "PDF32000_2008-page-vii.txt").toPath(), Collections.singleton(text));
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/63047485/pdfbox-newer-version-extracts-data-in-jumbled-order">
+     * PDFBox Newer version extracts data in jumbled order
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/file/d/1RbTM4yQWbXGOXyNZAD8LvBlNMKfE8eNv/view?usp=sharing">
+     * YOYO.pdf
+     * </a>
+     * <p>
+     * Indeed, with <code>SortByPosition</code> one gets a hodgepodge of
+     * the lines while without no line break characters are included.
+     * </p>
+     * <p>
+     * This is caused by the font metadata containing data (Ascent, Descent,
+     * CapHeight, and FontBBox) giving rise to the assumption that the glyphs
+     * are twice as high than they actually are shown. This confuses line
+     * recognition, both for sorting and for inserting line breaks.
+     * </p>
+     */
+    @Test
+    public void testYOYO() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("YOYO.pdf")) {
+            Rectangle region = new Rectangle();
+            region.setRect(55, 75.80, 160, 100);
+            PDDocument pdfDoc = Loader.loadPDF(resource);
+            PDFTextStripperByArea stripperByArea = new PDFTextStripperByArea ();
+            stripperByArea.setSortByPosition(true);
+            stripperByArea.addRegion("CVAM", region);
+            stripperByArea.extractRegions(pdfDoc.getPages().get(0));
+            String text = stripperByArea.getTextForRegion("CVAM");
+
+            System.out.printf("\n*\n* YOYO.pdf region\n*\n%s\n", text);
+            Files.write(new File(RESULT_FOLDER, "YOYO.txt").toPath(), Collections.singleton(text));
         }
     }
 }
