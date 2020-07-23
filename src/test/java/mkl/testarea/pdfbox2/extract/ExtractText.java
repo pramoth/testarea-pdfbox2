@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -884,6 +885,43 @@ public class ExtractText
 
             System.out.printf("\n*\n* YOYO.pdf region\n*\n%s\n", text);
             Files.write(new File(RESULT_FOLDER, "YOYO.txt").toPath(), Collections.singleton(text));
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/63047485/pdfbox-newer-version-extracts-data-in-jumbled-order">
+     * PDFBox Newer version extracts data in jumbled order
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/file/d/1RbTM4yQWbXGOXyNZAD8LvBlNMKfE8eNv/view?usp=sharing">
+     * YOYO.pdf
+     * </a>
+     * <p>
+     * Making use of the new option to add one's own font size calculation code,
+     * though, one can improve the result, both for <code>SortByPosition</code>
+     * set to <code>true</code> or <code>false</code>.
+     * </p>
+     * @see #testYOYO()
+     */
+    @Test
+    public void testCustomFontHeightYOYO() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("YOYO.pdf")) {
+            Rectangle region = new Rectangle();
+            region.setRect(55, 75.80, 160, 100);
+            PDDocument pdfDoc = Loader.loadPDF(resource);
+            PDFTextStripperByArea stripperByArea = new PDFTextStripperByArea() {
+                @Override
+                protected float computeFontHeight(PDFont font) throws IOException {
+                    return .5f;
+                }
+            };
+            stripperByArea.setSortByPosition(false);
+            stripperByArea.addRegion("CVAM", region);
+            stripperByArea.extractRegions(pdfDoc.getPages().get(0));
+            String text = stripperByArea.getTextForRegion("CVAM");
+
+            System.out.printf("\n*\n* YOYO.pdf region custom height\n*\n%s\n", text);
+            Files.write(new File(RESULT_FOLDER, "YOYO-customHeight.txt").toPath(), Collections.singleton(text));
         }
     }
 }
