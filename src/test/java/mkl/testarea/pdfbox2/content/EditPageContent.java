@@ -243,4 +243,38 @@ public class EditPageContent {
             document.save(new File(RESULT_FOLDER, "kommers_annons_elite-noBigText.pdf"));
         }
     }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/63338236/i-want-to-convert-pdf-to-image-but-i-only-want-single-output-image-which-contain">
+     * I Want to Convert PDF TO IMAGE but I only want single output image which contain all the images and Vector graphics only. I do not want text
+     * </a>
+     * <p>
+     * This test shows how to remove text.
+     * </p>
+     */
+    @Test
+    public void testRemoveTextDocument() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("document.pdf");
+                PDDocument document = Loader.loadPDF(resource)) {
+            for (PDPage page : document.getDocumentCatalog().getPages()) {
+                PdfContentStreamEditor identity = new PdfContentStreamEditor(document, page) {
+                    @Override
+                    protected void write(ContentStreamWriter contentStreamWriter, Operator operator, List<COSBase> operands) throws IOException {
+                        String operatorString = operator.getName();
+
+                        if (TEXT_SHOWING_OPERATORS.contains(operatorString))
+                        {
+                            return;
+                        }
+
+                        super.write(contentStreamWriter, operator, operands);
+                    }
+
+                    final List<String> TEXT_SHOWING_OPERATORS = Arrays.asList("Tj", "'", "\"", "TJ");
+                };
+                identity.processPage(page);
+            }
+            document.save(new File(RESULT_FOLDER, "document-noText.pdf"));
+        }
+    }
 }
