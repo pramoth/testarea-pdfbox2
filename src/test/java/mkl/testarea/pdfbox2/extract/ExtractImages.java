@@ -1,6 +1,7 @@
 package mkl.testarea.pdfbox2.extract;
 
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -311,6 +312,51 @@ public class ExtractImages
             };
             pdfGraphicsStreamEngine.processPage(pdPage);
             page++;
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/63579973/pdf-box-getxobjectnames-does-not-recognize-bar-code-on-my-pdf-however-it-does">
+     * PDF Box getXObjectNames() does not recognize bar code on my PDF, however it does recognize it on a PDF file I got off the internet
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/file/d/1PzVApIePg4U9XL399BpAd2oeY6Q2tLEB/view?usp=drivesdk">
+     * Sample PDF.pdf
+     * </a> as "Sample PDF Jayshree Atak.pdf"
+     * <p>
+     * The QR code image exports just fine. Thus, the issue appears to
+     * not be in the image extraction by PDFBox.
+     * </p>
+     */
+    @Test
+    public void testExtractSamplePDFJayshreeAtak() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("Sample PDF Jayshree Atak.pdf")   ) {
+            PDDocument document = Loader.loadPDF(resource);
+            int page = 1;
+            for (PDPage pdPage : document.getPages()) {
+                PDResources pdResources = pdPage.getResources();
+                int index = 0;
+
+                for (COSName name : pdResources.getXObjectNames()) {
+                    PDXObject xobject = pdResources.getXObject(name);
+                    if (xobject instanceof PDImageXObject)
+                    {
+                        PDImageXObject imageObject = (PDImageXObject) xobject;
+                        String suffix = imageObject.getSuffix();
+                        if (suffix != null)
+                        {
+                            BufferedImage image = imageObject.getImage();
+
+                            File file = new File(RESULT_FOLDER, String.format("Sample PDF Jayshree Atak-%s-%s.%s", page, index, imageObject.getSuffix()));
+                            ImageIO.write(image, imageObject.getSuffix(), file);
+                            index++;
+                            System.out.println(file);
+                        }
+                    }
+                }
+
+                page++;
+            }
         }
     }
 }
