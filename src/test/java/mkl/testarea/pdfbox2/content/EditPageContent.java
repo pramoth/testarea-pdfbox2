@@ -19,7 +19,9 @@ import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.Vector;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -275,6 +277,68 @@ public class EditPageContent {
                 identity.processPage(page);
             }
             document.save(new File(RESULT_FOLDER, "document-noText.pdf"));
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/63592078/replace-or-remove-text-from-pdf-with-pdfbox-in-java">
+     * Replace or remove text from PDF with PDFbox in Java
+     * </a>
+     * <br/>
+     * <a href="http://www.mediafire.com/file/9w3kkc4yozwsfms/file">
+     * nuevo.pdf
+     * </a>
+     * <p>
+     * This test shows how to look for specific text and remove it.
+     * Beware, this is a simple case where the exactly the whole
+     * search text is drawn by a single text drawing instruction,
+     * so the code only has to look at the most recently drawn
+     * characters. In general one may have to collect some text
+     * pieces and all instructions executed at that time and only
+     * forward them to <code>super</code> or drop some of them if
+     * the search term is found. In the worst case the whole page
+     * has to be collected, the text pieces sorted, and from that
+     * set of sorted texts instructions to keep or not to keep have
+     * to be determined.
+     * </p>
+     */
+    @Test
+    public void testRemoveQrTextNuevo() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("nuevo.pdf");
+                PDDocument document = Loader.loadPDF(resource)) {
+            for (PDPage page : document.getDocumentCatalog().getPages()) {
+                PdfContentStreamEditor editor = new PdfContentStreamEditor(document, page) {
+                    final StringBuilder recentChars = new StringBuilder();
+
+                    @Override
+                    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
+                            throws IOException {
+                        String string = font.toUnicode(code);
+                        if (string != null)
+                            recentChars.append(string);
+
+                        super.showGlyph(textRenderingMatrix, font, code, displacement);
+                    }
+
+                    @Override
+                    protected void write(ContentStreamWriter contentStreamWriter, Operator operator, List<COSBase> operands) throws IOException {
+                        String recentText = recentChars.toString();
+                        recentChars.setLength(0);
+                        String operatorString = operator.getName();
+
+                        if (TEXT_SHOWING_OPERATORS.contains(operatorString) && "[QR]".equals(recentText))
+                        {
+                            return;
+                        }
+
+                        super.write(contentStreamWriter, operator, operands);
+                    }
+
+                    final List<String> TEXT_SHOWING_OPERATORS = Arrays.asList("Tj", "'", "\"", "TJ");
+                };
+                editor.processPage(page);
+            }
+            document.save(new File(RESULT_FOLDER, "nuevo-noQrText.pdf"));
         }
     }
 }
