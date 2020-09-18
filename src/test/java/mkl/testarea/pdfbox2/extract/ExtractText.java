@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -922,6 +923,31 @@ public class ExtractText
 
             System.out.printf("\n*\n* YOYO.pdf region custom height\n*\n%s\n", text);
             Files.write(new File(RESULT_FOLDER, "YOYO-customHeight.txt").toPath(), Collections.singleton(text));
+        }
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/63949522/getting-text-from-pdf-using-apache-pdfbox">
+     * Getting text from PDF using Apache PDFBox
+     * </a>
+     * <br/>
+     * <a href="https://dropmefiles.com/qr8VQ">
+     * Olivia Troye_ Pence's former lead coronavirus task force aide slams Trump and endorses Biden in new video - CNNPolitics.pdf
+     * </a>
+     * <p>
+     * Extraction results in the proper text to be expected. The issue was that
+     * the OP's text viewer displayed the text assuming the wrong encoding.
+     * </p>
+     */
+    @Test
+    public void testOliviaTroyePencesFormerLeadCoronavirusTaskForceAideSlamsTrumpAndEndorsesBidenInNewVideoCNNPolitics() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("Olivia Troye_ Pence's former lead coronavirus task force aide slams Trump and endorses Biden in new video - CNNPolitics.pdf");
+                FileWriter writer = new FileWriter(new File(RESULT_FOLDER, "Olivia Troye_ Pence's former lead coronavirus task force aide slams Trump and endorses Biden in new video - CNNPolitics.txt"))) {
+            PDDocument document = Loader.loadPDF(resource);
+            PDFTextStripper pdfTextStripper = new PDFTextStripper();
+            String text = pdfTextStripper.getText(document);
+            writer.write(text);
+            document.close();
         }
     }
 }
