@@ -38,7 +38,7 @@ public class TestGraphicsCounter
             PDDocument document = Loader.loadPDF(resource);
 
             PDPage page = document.getPage(4);
-            PDFStreamParser parser = new PDFStreamParser(page.getContents());
+            PDFStreamParser parser = new PDFStreamParser(page);
             List<Object> tokens = parser.parse();
             int lines=0;
             int curves=0;
