@@ -262,4 +262,31 @@ public class ExtractVisibleText {
             Files.write(new File(RESULT_FOLDER, "test2DmitryK-fat.txt").toPath(), Collections.singleton(text));
         }
     }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/63936154/how-to-identify-and-remove-hidden-text-from-the-pdf-using-pdfbox-java">
+     * How to identify and remove hidden text from the PDF using PDFBox java
+     * </a>
+     * <br/>
+     * <a href="https://drive.google.com/file/d/1epCmrJ1lsM9o5X_m3xgVVqhmyYY6Lf1O/view?usp=drivesdk">
+     * FooterText.pdf
+     * </a>
+     * <p>
+     * The text covered by a large white rectangle ("Green Bonds – Made by KfW │ Allocation Report:
+     * Use of proceeds of 2019 Green Bond issuances│ March 2020 8") is correctly dropped by the
+     * {@link PDFVisibleTextStripper}.
+     * </p>
+     */
+    @Test
+    public void testExtractFromFooterText() throws IOException {
+        try (   InputStream resource = getClass().getResourceAsStream("FooterText.pdf")  ) {
+            PDDocument document = Loader.loadPDF(resource);
+            PDFTextStripper stripper = new PDFVisibleTextStripper(true);
+            //stripper.setSortByPosition(true);
+            String text = stripper.getText(document);
+
+            System.out.printf("\n*\n* FooterText.pdf\n*\n%s\n", text);
+            Files.write(new File(RESULT_FOLDER, "FooterText.txt").toPath(), Collections.singleton(text));
+        }
+    }
 }
