@@ -31,6 +31,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -713,6 +714,55 @@ public class CreateSignature
                 PDDocument pdDocument = Loader.loadPDF(resource)   )
         {
             signAndLockExistingFieldWithLock(pdDocument, result, data -> signWithSeparatedHashing(data));
+        }
+    }
+
+    /**
+     * <a href="https://ec.europa.eu/cefdigital/tracker/browse/DSS-2260">
+     * Multiple PADeS signatures with images do not work
+     * </a>
+     * <br/>
+     * <a href="https://ec.europa.eu/cefdigital/tracker/secure/attachment/42608/signed.pdf">
+     * signed.pdf
+     * </a>, the original (unsigned) revision of which is used as "signed-000.pdf"
+     * <br/>
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-4997">
+     * Incremental update adds certain objects not marked as needing update
+     * </a>
+     * <p>
+     * This test signs the PDF after marking the first page object
+     * (and a path to it) as needing to be updated as also would
+     * happen in case of a visual signature. And indeed, the issue
+     * DSS-2260 can be reproduced, not only the page object is
+     * copied to the incremental update, the object 54 referenced
+     * from it is, too.
+     * </p>
+     * <p>
+     * The cause is that the PDFBox incremental update mechanism
+     * checks the <code>COSUpdateInfo.isNeedToBeUpdated</code>
+     * value and only does not write an object if it has a value
+     * of <code>false</code> there. Unfortunately the object 54
+     * only contains a {@link COSName} which does not implement
+     * {@link COSUpdateInfo} and, therefore, does not offer such
+     * a value. See also PDFBOX-4997.
+     * </p>
+     */
+    @Test
+    public void testSignSigned000() throws IOException
+    {
+        try (   InputStream resource = getClass().getResourceAsStream("signed-000.pdf");
+                OutputStream result = new FileOutputStream(new File(RESULT_FOLDER, "signed-000-once.pdf"));
+                PDDocument pdDocument = Loader.loadPDF(resource)   )
+        {
+            COSDictionary catalog = pdDocument.getDocumentCatalog().getCOSObject();
+            catalog.setNeedToBeUpdated(true);
+            COSDictionary pages = catalog.getCOSDictionary(COSName.PAGES);
+            pages.setNeedToBeUpdated(true);
+            COSArray kids = pages.getCOSArray(COSName.KIDS);
+            kids.setNeedToBeUpdated(true);
+            COSDictionary page = (COSDictionary) kids.getObject(0);
+            page.setNeedToBeUpdated(true);
+            sign(pdDocument, result, data -> signWithSeparatedHashing(data));
         }
     }
 }
