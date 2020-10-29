@@ -60,4 +60,70 @@ public class OpenFile
             System.out.printf("Producer of plaidshirt's samplePDF.pdf: %s\n", pdfdocument.getDocumentInformation().getProducer());
         }
     }
+
+    /**
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-5006">
+     * java.io.IOException: Error: End-of-File, expected line during PDDocument.load
+     * </a>
+     * <br/>
+     * <a href="http://www.geislerfarms.com/documents/filelibrary/Geisler_COVID_statement_0A7A094E1EFB7.pdf">
+     * Geisler_COVID_statement_0A7A094E1EFB7.pdf
+     * </a>
+     * <p>
+     * Cannot reproduce a document loading error.
+     * </p>
+     */
+    @Test
+    public void testOpenGeislerCovidStatement_0A7A094E1EFB7() throws IOException
+    {
+        try ( InputStream resource = getClass().getResourceAsStream("Geisler_COVID_statement_0A7A094E1EFB7.pdf") )
+        {
+            PDDocument pdfdocument = Loader.loadPDF(resource);
+            System.out.printf("Producer of Geisler_COVID_statement_0A7A094E1EFB7.pdf: %s\n", pdfdocument.getDocumentInformation().getProducer());
+        }
+    }
+
+    /**
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-5006">
+     * java.io.IOException: Error: End-of-File, expected line during PDDocument.load
+     * </a>
+     * <br/>
+     * <a href="https://www.buerger.uni-frankfurt.de/80977779/Rehbein_Schule_Hanau_9_2018.pdf">
+     * Rehbein_Schule_Hanau_9_2018.pdf
+     * </a>
+     * <p>
+     * Cannot reproduce a document loading error.
+     * </p>
+     */
+    @Test
+    public void testOpenRehbeinSchuleHanau_9_2018() throws IOException
+    {
+        try ( InputStream resource = getClass().getResourceAsStream("Rehbein-Schule_Hanau_9_2018.pdf") )
+        {
+            PDDocument pdfdocument = Loader.loadPDF(resource);
+            System.out.printf("Producer of Rehbein-Schule_Hanau_9_2018.pdf: %s\n", pdfdocument.getDocumentInformation().getProducer());
+        }
+    }
+
+    /**
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-5006">
+     * java.io.IOException: Error: End-of-File, expected line during PDDocument.load
+     * </a>
+     * <br/>
+     * <a href="http://www.sahealth.sa.gov.au/wps/wcm/connect/c736e1d5-932e-4f8a-8e56-52ab10a214fd/SALHN+Governing+Board+Minutes+-+5+March+2020.pdf?MOD=AJPERES&CACHEID=ROOTWORKSPACE-c736e1d5-932e-4f8a-8e56-52ab10a214fd-niR9I3J">
+     * SALHN+Governing+Board+Minutes+-+5+March+2020.pdf
+     * </a>
+     * <p>
+     * Cannot reproduce a document loading error.
+     * </p>
+     */
+    @Test
+    public void testOpenSalhnGoverningBoardMinutes5March2020() throws IOException
+    {
+        try ( InputStream resource = getClass().getResourceAsStream("SALHN+Governing+Board+Minutes+-+5+March+2020.pdf") )
+        {
+            PDDocument pdfdocument = Loader.loadPDF(resource);
+            System.out.printf("Producer of SALHN+Governing+Board+Minutes+-+5+March+2020.pdf: %s\n", pdfdocument.getDocumentInformation().getProducer());
+        }
+    }
 }
