@@ -20,7 +20,7 @@
 		</plugins>
 	</build>
 	<properties>
-		<pdfbox.version>[2.0.0,3.0.0)</pdfbox.version>
+		<pdfbox.version>2.0.21</pdfbox.version>
 		<bc.version>1.54</bc.version>
 		<junit.version>4.13.1</junit.version>
 	</properties>
@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>net.sf.cssbox</groupId>
 			<artifactId>pdf2dom</artifactId>
-			<version>1.8-SNAPSHOT</version>
+			<version>1.8</version>
 		</dependency>
 	</dependencies>
 </project>
