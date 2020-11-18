@@ -59,7 +59,7 @@ import org.junit.Test;
 public class CreateMultipleVisualizations implements SignatureInterface {
     final static File RESULT_FOLDER = new File("target/test-outputs", "sign");
 
-    public static final String KEYSTORE = "keystores/demo-rsa2048.ks"; 
+    public static final String KEYSTORE = "keystores/demo-rsa2048.p12";
     public static final char[] PASSWORD = "demo-rsa2048".toCharArray(); 
 
     public static KeyStore ks = null;
@@ -220,7 +220,7 @@ public class CreateMultipleVisualizations implements SignatureInterface {
             cs.setNonStrokingColor(Color.black);
             cs.newLineAtOffset(fontSize, height - leading);
             cs.setLeading(leading);
-            cs.showText("Signature text");
+            cs.showText("Signature text ");
             cs.newLine();
             cs.showText("some additional Information");
             cs.newLine();
